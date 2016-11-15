@@ -1,8 +1,6 @@
 Django CLI
 ==========
 
-# Overview
-
 Django CLI is a command-line tool that aims to automate the repetitive workflows necessary
 to manage Django application code, particularly:
 
@@ -22,16 +20,23 @@ for newcomers.
 Django CLI, insipred by Ember CLI, attempts to fill these gaps by providing a comprehensive yet extendable
 interface for Django application development.
 
-# Commands
+# Getting Started
 
-Run `django --help` to see a list of command, and `django <subcommand> --help` for help on any specific ommand:
+## Installation
 
-## django init
+To install Django CLI, simply run [the appropriate installer](./INSTALLERS.md) for your operating system.
+
+## Commands
+
+Run `django --help` to see a list of supported commands.
+Run `django <subcommand> --help` for help on any specific subcommand:
+
+### django init
 
 Sets up a shell Django project in the current directory.
 This command will prompt for all optional arguments, unless passed in.
 
-## django install <ADDON>[@VERSION] [--dev]
+### django install <ADDON>[@VERSION] [--dev]
 
 Imports a Django CLI addon or PyPi package into the current project.
 
@@ -40,7 +45,7 @@ Otherwise, the addon will be treated as a core package dependency.
 
 In the case of a CLI addon, the addon's initializer will be executed.
 
-## django generate [ADDON.]<BLUEPRINT> [...ARGS]
+### django generate [ADDON.]<BLUEPRINT> [...ARGS]
 
 Generates a module given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
@@ -49,14 +54,14 @@ The following core blueprints are supported:
 
 * model
 
-## django run <COMMAND> [--docker] [...ARGS]
+### django run <COMMAND> [--docker] [...ARGS]
 
 Run any Django command in development mode.
 
 If `--docker` is passed, uses Docker to run the app (the Docker CLI must be installed).
 Otherwise, a temporary virtual environment will be used to build and run the app.
 
-# Addons
+# Developing Addons
 
 It is easy to turn an existing Python or Django library into a Django-CLI addon.
 The only distinction is a `blueprints` module within the application package.
@@ -71,7 +76,7 @@ their implementions through the code generation features built into Django-CLI.
 A blueprint is a Python package with a `cli.py` module that describes the input
 and a `templates` folder that describes the output.
 
-## cli.py
+### cli.py
 
 A blueprint's `cli` package should export a single method called `cli` that serves as a `click`
 entrypoint for the blueprint. This entrypoint should describe the required and optional parameters using
@@ -94,12 +99,12 @@ def cli(ctx, name):
     return generate(__file__, ctx)
 ```
 
-## templates
+### templates
 
 A blueprint's templates folder contains `Jinja` template files that are rendered and merged into an existing
 application when the blueprint is called.
 
-### rendering
+#### rendering
 
 Blueprints are rendered by applying the context passed to Django CLI's `generate` method to each of the files
 in the `templates` directory. In addition, file names containing double-underscore delimited variables are replaced by values
@@ -134,7 +139,7 @@ Might be rendered as follows for app "foo" and name "bar":
                     pass
 ```
 
-### merging
+#### merging
 
 After a blueprint has been rendered, it is merged into the current application folder by folder.
 The following rules are used for each folder:
@@ -188,4 +193,3 @@ After merging in the blueprint for model "bar" from the above example, the struc
 Django CLI is written in Python but does not actually use Django.
 It makes use of the `click` library for handling CLI input, `Jinja2` to support templating, and `PyInstaller`
 for distribution.
-
