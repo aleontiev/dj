@@ -35,7 +35,7 @@ This command will prompt for all optional arguments, unless passed in.
 
 Imports a Django CLI addon or PyPi package into the current project.
 
-If --dev is passed, the addon will only be required for testing and local development.
+If `--dev` is passed, the addon will only be required for testing and local development.
 Otherwise, the addon will be treated as a core package dependency.
 
 In the case of a CLI addon, the addon's initializer will be executed.
@@ -53,7 +53,7 @@ The following core blueprints are supported:
 
 Run any Django command in development mode.
 
-If --docker is passed, uses Docker to run the app (the Docker CLI must be installed).
+If `--docker` is passed, uses Docker to run the app (the Docker CLI must be installed).
 Otherwise, a temporary virtual environment will be used to build and run the app.
 
 # Addons
