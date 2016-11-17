@@ -25,6 +25,7 @@ interface for Django application development.
 ## Installation
 
 To install Django CLI, simply run [the appropriate installer](./INSTALLERS.md) for your operating system.
+Django CLI distributes with PyInstaller and runs within an isolated Python environment.
 
 ## Commands
 
@@ -76,27 +77,23 @@ their implementions through the code generation features built into Django-CLI.
 A blueprint is a Python package with a `cli.py` module that describes the input
 and a `templates` folder that describes the output.
 
-### cli.py
+### generate.py
 
-A blueprint's `cli` package should export a single method called `cli` that serves as a `click`
+A blueprint's `generate` package should export a single method called `generate` that serves as a `click`
 entrypoint for the blueprint. This entrypoint should describe the required and optional parameters using
-`click` decorators and should call the `generate` method provided by Django CLI with a
-populated context object.
+`click` decorators and should return the context that will be called by Django CLI's generation.
 
 Example:
 
 ```
-# django_cli.blueprints.model.cli
-
 import click
-from django_cli.click import command
-fron django_cli.generate import generate
 
-@command()
+@click.command()
 @click.argument('name')
-def cli(ctx, name):
-    ctx.name = name
-    return generate(__file__, ctx)
+def generate(context):
+    # add "class_name" alias
+    context.class_name = name
+    return context
 ```
 
 ### templates
@@ -110,7 +107,7 @@ Blueprints are rendered by applying the context passed to Django CLI's `generate
 in the `templates` directory. In addition, file names containing double-underscore delimited variables are replaced by values
 from the context. The "app" variable is automatically populated by Django CLI with the name of the current application.
 
-For example, the model blueprint (`django_cli.blueprints.model.templates`):
+For example, the model blueprint:
 ```
 /
     __app__/
@@ -132,10 +129,10 @@ Might be rendered as follows for app "foo" and name "bar":
         models/
             __init__.py
                 # cli: merge
-                from .bar import bar
+                from .bar import Bar
             bar.py
-                from django.db improt models
-                class bar(models.Model):
+                from django.db import models
+                class Bar(models.Model):
                     pass
 ```
 
@@ -151,7 +148,7 @@ The following rules are used for each folder:
   * If the blueprint does contain the `cli: merge` directive, the two files will be merged together statement by statement:
     * Import statements that match exactly are only rendered once
     * Assignment statements that match exactly are only rendered once
-    * Assignment statements to the same variable with different list/set/dict-type values have their values merged.
+    * Assignment statements to the same variable with different list/set/dict-type values have their values merged
 
 For example, suppose that app "foo" has the following structure:
 
@@ -163,7 +160,7 @@ For example, suppose that app "foo" has the following structure:
             ...
         models/
             __init__.py
-                from .qux import qux
+                from .qux import Qux
             qux.py
                 ...
 ```
@@ -178,11 +175,11 @@ After merging in the blueprint for model "bar" from the above example, the struc
             ...
         models/
             __init__.py
-                from .qux import qux
-                from .bar import bar
+                from .qux import Qux
+                from .bar import Bar
             bar.py
                 from django.db import models
-                class bar(models.Model):
+                class Bar(models.Model):
                     pass
             qux.py
                 ...
@@ -190,6 +187,6 @@ After merging in the blueprint for model "bar" from the above example, the struc
 
 # Implementation
 
-Django CLI is written in Python but does not actually use Django.
-It makes use of the `click` library for handling CLI input, `Jinja2` to support templating, and `PyInstaller`
-for distribution.
+Django CLI is written in Python and depends on:
+- `click` to handle CLI input
+- `Jinja2` to render templates
