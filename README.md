@@ -74,7 +74,7 @@ This blueprints module should provide all of the addon's blueprints, including a
 Blueprints allows addons to establish structural conventions for
 their implementions through the code generation features built into Django-CLI.
 
-A blueprint is a Python package with a `cli.py` module that describes the input
+A blueprint is a Python package with a `generate.py` module that describes the input
 and a `templates` folder that describes the output.
 
 ### generate.py
