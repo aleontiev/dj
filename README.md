@@ -12,13 +12,14 @@ to manage Django application code:
 # Why Django CLI?
 
 While there are existing tools that address some of these workflows at the language and framework level
-(django-admin/cookiecutter/cog for generation, virtualenv/pyenv/Docker/Makefile for isolated execution),
+(django-admin/cookiecutter/virtualenv/Makefile),
 each tool has its own learning curve, and there are few integration points between them.
 The reality of this ecosystem is often an uncertain and boilerplate developer experience, especially
 for newcomers. 
 
 Django CLI, insipred by Ember CLI, attempts to fill these gaps by providing a simple, comprehensive, and extendable
-interface for the Django development lifecycle.
+interface for the Django development lifecycle. Django CLI is built in Python and provides familiar integration
+points for Python developers.
 
 # Getting Started
 
