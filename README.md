@@ -37,7 +37,7 @@ Run `django <subcommand> --help` for help on any specific subcommand:
 Sets up a shell Django project in the current directory.
 This command will prompt for all optional arguments, unless passed in.
 
-### django install <ADDON>[@VERSION] [--dev]
+### django install ADDON[@VERSION]
 
 Imports a Django CLI addon or PyPi package into the current project.
 
@@ -46,7 +46,7 @@ Otherwise, the addon will be treated as a core package dependency.
 
 In the case of a CLI addon, the addon's initializer will be executed.
 
-### django generate [ADDON.]<BLUEPRINT> [...ARGS]
+### django generate [ADDON.]BLUEPRINT [...ARGS]
 
 Generates a module given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
@@ -55,7 +55,7 @@ The following core blueprints are supported:
 
 * model
 
-### django run <COMMAND> [--docker] [...ARGS]
+### django run COMMAND [...ARGS]
 
 Run any Django command in development mode.
 
