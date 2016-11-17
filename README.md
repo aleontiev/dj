@@ -1,8 +1,8 @@
 Django CLI
 ==========
 
-Django CLI is a command-line tool that aims to automate the repetitive workflows necessary
-to manage Django application code, particularly:
+Django CLI is a command-line tool that automates the repetitive workflows necessary
+to manage Django application code:
 
 * Setting up a new project 
 * Adding dependencies to the project
