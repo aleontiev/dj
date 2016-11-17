@@ -14,11 +14,11 @@ to manage Django application code, particularly:
 While there are existing tools that address some of these workflows at the language and framework level
 (django-admin/cookiecutter/cog for generation, virtualenv/pyenv/Docker/Makefile for isolated execution),
 each tool has its own learning curve, and there are few integration points between them.
-The reality of this ecosystem is often an uncertain and un-DRY developer experience, especially
+The reality of this ecosystem is often an uncertain and boilerplate developer experience, especially
 for newcomers. 
 
-Django CLI, insipred by Ember CLI, attempts to fill these gaps by providing a comprehensive yet extendable
-interface for Django application development.
+Django CLI, insipred by Ember CLI, attempts to fill these gaps by providing a simple, comprehensive, and extendable
+interface for the Django development lifecycle.
 
 # Getting Started
 
@@ -30,7 +30,7 @@ Django CLI distributes with PyInstaller and runs within an isolated Python envir
 ## Commands
 
 Run `django --help` to see a list of supported commands.
-Run `django <subcommand> --help` for help on any specific subcommand:
+Run `django SUBCOMMAND --help` for help on any specific subcommand:
 
 ### django init
 
@@ -53,14 +53,14 @@ of an addon and may take several arguments.
 
 The following core blueprints are supported:
 
-* model
+* model NAME
 
 ### django run COMMAND [...ARGS]
 
 Run any Django command in development mode.
 
-If `--docker` is passed, uses Docker to run the app (the Docker CLI must be installed).
-Otherwise, a temporary virtual environment will be used to build and run the app.
+A virtual environment will be used to build and run the app.
+The current system version of Python will be used.
 
 # Developing Addons
 
@@ -202,5 +202,5 @@ Django CLI uses `Jinja2` to render templates.
 In order to support blueprint generation, Django CLI builds a registry of CLI-compatible addons that contain blueprints.
 To do this, it has to install all of the current application's dependencies. This is done in a virtual environment created using Python 3's venv API.
 
-Once the application and its dependencies are installed, Django CLI looks through each of the INSTALLED_APPS packages for
+Once the application and its dependencies are installed, Django CLI looks through each of the `INSTALLED_APPS` packages for
 a `blueprints` subdirectory that contains subpackages matching a blueprint's signature: `generate.py` and `templates`.
