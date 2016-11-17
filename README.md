@@ -185,8 +185,22 @@ After merging in the blueprint for model "bar" from the above example, the struc
                 ...
 ```
 
-# Implementation
+# Implementation Details
 
 Django CLI is written in Python and depends on:
-- `click` to handle CLI input
-- `Jinja2` to render templates
+
+## Command Parsing
+
+Django CLI uses `click` to handle CLI input. 
+
+## Rendering
+
+Django CLI uses `Jinja2` to render templates.
+
+## Registry & Virtual environment
+
+In order to support blueprint generation, Django CLI builds a registry of CLI-compatible addons that contain blueprints.
+To do this, it has to install all of the current application's dependencies. This is done in a virtual environment created using Python 3's venv API.
+
+Once the application and its dependencies are installed, Django CLI looks through each of the INSTALLED_APPS packages for
+a `blueprints` subdirectory that contains subpackages matching a blueprint's signature: `generate.py` and `templates`.
