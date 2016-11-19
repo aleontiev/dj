@@ -80,9 +80,9 @@ and a `templates` folder that describes the output.
 
 ### generate.py
 
-A blueprint's `generate` package should export a single method called `generate` that serves as a `click`
+A blueprint's `generate` package should export a single method called `get_context` that serves as a `click`
 entrypoint for the blueprint. This entrypoint should describe the required and optional parameters using
-`click` decorators and should return the context that will be called by Django CLI's generation.
+`click` decorators and should return the context that will be called by Django CLI's generation methods.
 
 Example:
 
@@ -91,10 +91,12 @@ import click
 
 @click.command()
 @click.argument('name')
-def generate(context):
-    # add "class_name" alias
-    context.class_name = name
-    return context
+@click.option('--class-name')
+def get_context(name, class_name):
+    return {
+        'name': name,
+        'class_name': class_name or name.title()
+    }
 ```
 
 ### templates
