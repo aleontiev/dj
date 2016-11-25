@@ -1,2 +1,4 @@
 virtualenv
 click
+jinja2
+inflection

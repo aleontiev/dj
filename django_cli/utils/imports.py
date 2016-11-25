@@ -26,9 +26,11 @@ def load_module(path):
 
 
 def parse_setup(setup_filename):
-    """Parse setup.py and return args and keywords args to its setup
-    function call
+    """Parse a setup.py file.
 
+    Returns:
+        keywords args to its setup
+        function call.
     """
     mock_setup = textwrap.dedent('''\
     def setup(*args, **kwargs):

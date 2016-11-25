@@ -1,5 +1,6 @@
 import click
 from django_cli.commands.base import BlueprintLoaderCommand
+from jinja2.exceptions import UndefinedError
 
 
 @click.command(cls=BlueprintLoaderCommand)
@@ -16,8 +17,14 @@ def generate(context, application=None, blueprint=None, **kwargs):
         blueprint: represents the blueprint
     """
     if not application:
-        click.fail('Could not locate application')
+        raise click.ClickException('Could not locate application')
     if not blueprint:
-        click.fail('Could not locate blueprint')
+        raise click.ClickException('Could not locate blueprint')
 
-    application.generate(blueprint, context)
+    try:
+        application.generate(blueprint, context)
+    except UndefinedError as e:
+        raise click.ClickException(
+            '%s.\n'
+            'The blueprint\'s context may be invalid.' % str(e)
+        )

@@ -30,6 +30,7 @@ class Application(object):
         )
         self.name = self.setup['name']
         self.build_directory = os.path.join(self.source_directory, '.venv')
+        # TODO: generalize this
         self.packages_directory = os.path.join(
             self.build_directory, 'lib/python2.7/site-packages'
         )
@@ -99,7 +100,7 @@ class Application(object):
         Only builds if the build is out-of-date.
 
         Raises:
-            ValidationError if the app fails to build
+            ValidationError if the app fails to build.
         """
 
         if self.is_build_outdated:
@@ -120,7 +121,7 @@ class Application(object):
         generator = Generator(self, blueprint, context)
         return generator.generate()
 
-# singleton application
+# singleton application instance
 current_application = None
 
 
