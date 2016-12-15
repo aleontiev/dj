@@ -1,3 +1,4 @@
+import filecmp
 import tempfile
 import shutil
 import os
@@ -51,7 +52,7 @@ class Generator(object):
     def merge(self):
         """Merges the rendered blueprint into the application."""
         temp_dir = self.temp_dir
-        app_dir = self.application.directory
+        app_dir = self.application.source_directory
         for root, dirs, files in os.walk(temp_dir):
             for directory in dirs:
                 directory = os.path.join(root, directory)
@@ -63,16 +64,27 @@ class Generator(object):
             for file in files:
                 source = os.path.join(root, file)
                 target = source.replace(temp_dir, app_dir, 1)
+                relative_target = target.replace(app_dir, '.')
                 action = 'r'
-                if os.path.exists(target):
+                if (
+                    os.path.exists(target)
+                    and not filecmp.cmp(source, target, shallow=False)
+                ):
                     action = click.prompt(
                         '%s already exists, '
-                        '[r]eplace, [s]kip, or [m]erge?' % target,
+                        '[R]eplace, [s]kip, or [m]erge?' % relative_target,
                         default='r'
                     ).lower()
                     if action not in {'r', 'm', 's'}:
                         action = 'r'
+
+                if action == 's':
+                    print 'skipped %s' % relative_target
+                    continue
                 if action == 'r':
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
+                    print 'generated %s' % relative_target
+                if action == 'm':
+                    raise Exception('merge is not implemented')
