@@ -25,7 +25,7 @@ setup(
     install_requires=open('install_requires.txt').readlines(),
     entry_points={
         'console_scripts': [
-            'django = django_cli.commands.cmd_django:command'
+            'django = django_cli.commands.django:command'
         ]
     },
     test_suite='runtests.runtests',

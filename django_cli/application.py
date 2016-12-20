@@ -1,5 +1,4 @@
 import os
-from virtualenv import create_environment
 from .addon import Addon
 from .generator import Generator
 
@@ -36,11 +35,12 @@ class Application(object):
             self.name = None
             self.is_empty = True
 
-        self.build_directory = os.path.join(self.source_directory, '.venv')
         # TODO: generalize this
+        self.build_directory = os.path.join(self.source_directory, '.venv')
         self.packages_directory = os.path.join(
             self.build_directory, 'lib/python2.7/site-packages'
         )
+
         self.activate_script = os.path.join(
             self.build_directory,
             'bin/activate'
@@ -99,7 +99,11 @@ class Application(object):
     def setup_environment(self):
         if not os.path.exists(self.activate_script):
             print 'Creating virtual environment...'
-            create_environment(self.build_directory)
+            try:
+                execute('virtualenv %s' % self.build_directory)
+            except:
+                print 'Failed, try running "pip install virtualenv".'
+                raise
 
     def build(self):
         """Builds the app in a virtual environment.
@@ -112,16 +116,16 @@ class Application(object):
 
         if not self.is_empty and self.is_build_outdated:
             self.setup_environment()
-            self.execute('pip install -r requirements.txt --process-dependency-links')  # noqa
-            self.execute('python setup.py install')
+            self.execute('pip install -r requirements.txt --process-dependency-links', verbose=True)  # noqa
+            self.execute('python setup.py install', verbose=True)
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
         return execute('. %s; %s' % (self.activate_script, command), **kwargs)
 
-    def run(self, command):
+    def run(self, command, verbose=True):
         self.build()
-        self.execute(command)
+        return self.execute(command, verbose=verbose)
 
     def generate(self, blueprint, context):
         """Generate a blueprint within this application."""
