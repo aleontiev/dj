@@ -1,4 +1,5 @@
 from django_cli.application import get_current_application
+from django_cli.blueprint import get_core_blueprints
 import click
 
 
@@ -11,12 +12,29 @@ class BlueprintLoaderCommand(click.MultiCommand):
         return self._application
 
     @property
+    def addons(self):
+        if not hasattr(self, '_addons'):
+            addons = self.application.get_addons()
+            self._addons = {
+                addon.name: addon for addon in addons
+            }
+        return self._addons
+
+    @property
     def blueprints(self):
         if not hasattr(self, '_blueprints'):
-            blueprints = self.application.get_blueprints()
-            self._blueprints = {
-                blueprint.name: blueprint for blueprint in blueprints
-            }
+            addons = self.addons
+            blueprints = {}
+            for addon in addons:
+                for blueprint in addon.get_blueprints():
+                    blueprints[
+                        '%s.%s' %
+                        (addon.name, blueprint.name)
+                    ] = blueprint
+            for blueprint in get_core_blueprints():
+                blueprints[blueprint.name] = blueprint
+
+            self._blueprints = blueprints
         return self._blueprints
 
     def list_commands(self, context):

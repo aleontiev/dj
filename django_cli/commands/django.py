@@ -1,3 +1,4 @@
+import sys, os
 import click
 from django_cli.commands.base import MultiCommand
 from .run import command as run_command

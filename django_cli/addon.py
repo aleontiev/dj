@@ -11,16 +11,7 @@ class Addon(object):
         self.blueprints_directory = os.path.join(directory, 'blueprints')
 
     def get_blueprints(self):
-        blueprints = [
-            Blueprint(directory)
-            for directory in
-            get_directories(
-                self.blueprints_directory,
-                filter=lambda x: Blueprint.is_valid(x),
-                depth=1
-            )
-        ]
-        return blueprints
+        return Blueprint.get_blueprints(directory)
 
     def __repr__(self):
         return '%s (%s)' % (self.name, self.directory)

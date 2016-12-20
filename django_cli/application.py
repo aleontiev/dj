@@ -4,8 +4,8 @@ from .generator import Generator
 
 from .utils.imports import parse_setup
 from .utils.system import (
-    get_last_touched,
     get_directories,
+    get_last_touched,
     get_files,
     touch,
     execute
@@ -25,15 +25,13 @@ class Application(object):
         self.source_directory = os.getcwd()
 
         try:
-            self.setup = parse_setup(
+            setup = parse_setup(
                 os.path.join(self.source_directory, 'setup.py')
             )
-            self.name = self.setup['name']
-            self.is_empty = False
+            self.name = setup['name']
         except OSError:
             self.setup = {}
             self.name = None
-            self.is_empty = True
 
         # TODO: generalize this
         self.build_directory = os.path.join(self.source_directory, '.venv')
@@ -114,7 +112,7 @@ class Application(object):
             ValidationError if the app fails to build.
         """
 
-        if not self.is_empty and self.is_build_outdated:
+        if self.is_build_outdated:
             self.setup_environment()
             self.execute('pip install -r requirements.txt --process-dependency-links', verbose=True)  # noqa
             self.execute('python setup.py install', verbose=True)
