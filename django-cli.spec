@@ -3,7 +3,7 @@ import os
 
 ROOT = '/Users/ant/code/django-cli'
 BLUEPRINTS = 'django_cli/blueprints'
-HIDDEN_IMPORTS = ['setuptools', 'inflection']
+HIDDEN_IMPORTS = ['setuptools', 'setuptools.msvc', 'inflection']
 
 block_cipher = None
 

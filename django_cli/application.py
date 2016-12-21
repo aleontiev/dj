@@ -45,9 +45,10 @@ class Application(object):
                 try:
                     name = parse_setup(setup_file)['name']
                 except Exception as e:
+                    import traceback
                     raise Exception(
-                        'Failed to parse app setup file: %s' %
-                        str(e)
+                        'Failed to parse app setup file: %s\n%s' %
+                        (str(e), traceback.format_exc())
                     )
             self._name = name
         return self._name
@@ -125,7 +126,6 @@ class Application(object):
         if self.name and self.is_build_outdated:
             self.setup_environment()
             self.execute('pip install -r requirements.txt --process-dependency-links', verbose=True)  # noqa
-            self.execute('python setup.py install', verbose=True)
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
