@@ -53,5 +53,4 @@ class Blueprint(object):
 
 def get_core_blueprints():
     path = os.path.join(os.path.dirname(sys.executable), 'django_cli/blueprints')
-    print path
     return Blueprint.get_blueprints(path)

@@ -1,4 +1,9 @@
-{{ app }}
-=================
+# {{ app }}
+
+## Description 
 
 {{ description }}
+
+## Maintainers
+
+- {{ author }}

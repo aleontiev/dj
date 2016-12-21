@@ -32,7 +32,8 @@ class Generator(object):
     def render(self):
         """Render the blueprint into a temp directory using the context."""
         context = self.context
-        context['app'] = self.application.name
+        if 'app' not in context:
+            context['app'] = self.application.name
         temp_dir = self.temp_dir
         templates_root = self.blueprint.templates_directory
         for root, dirs, files in os.walk(templates_root):
@@ -42,12 +43,14 @@ class Generator(object):
                 directory = directory.replace(templates_root, temp_dir, 1)
                 os.mkdir(directory)
             for file in files:
-                content = render_from_file(os.path.join(root, file), context)
-                file = os.path.join(root, file)
-                file = strip_extension(render_from_string(file, context))
-                file = file.replace(templates_root, temp_dir, 1)
-                with open(file, 'w') as f:
+                full_file = os.path.join(root, file)
+                stat = os.stat(full_file)
+                content = render_from_file(full_file, context)
+                full_file = strip_extension(render_from_string(full_file, context))
+                full_file = full_file.replace(templates_root, temp_dir, 1)
+                with open(full_file, 'w') as f:
                     f.write(content)
+                os.chmod(full_file, stat.st_mode)
 
     def merge(self):
         """Merges the rendered blueprint into the application."""

@@ -23,33 +23,43 @@ class Application(object):
 
     def __init__(self):
         self.source_directory = os.getcwd()
-
-        try:
-            setup = parse_setup(
-                os.path.join(self.source_directory, 'setup.py')
-            )
-            self.name = setup['name']
-        except OSError:
-            self.setup = {}
-            self.name = None
-
         # TODO: generalize this
         self.build_directory = os.path.join(self.source_directory, '.venv')
         self.packages_directory = os.path.join(
             self.build_directory, 'lib/python2.7/site-packages'
         )
-
         self.activate_script = os.path.join(
             self.build_directory,
             'bin/activate'
         )
-        self.application_directory = os.path.join(
-            self.source_directory,
-            self.name
-        )
 
-    def __repr__(self):
+    def __unicode__(self):
         return '%s (%s)' % (self.name, self.source_directory)
+
+    @property
+    def name(self):
+        if not hasattr(self, '_name'):
+            name = None
+            setup_file = os.path.join(self.source_directory, 'setup.py')
+            if os.path.exists(setup_file):
+                try:
+                    name = parse_setup(setup_file)['name']
+                except Exception as e:
+                    raise Exception(
+                        'Failed to parse app setup file: %s' %
+                        str(e)
+                    )
+            self._name = name
+        return self._name
+
+    @property
+    def application_directory(self):
+        if not hasattr(self, '_application_directory'):
+            self._application_directory = os.path.join(
+                self.source_directory,
+                self.name
+            )
+        return self._application_directory
 
     def get_addons(self):
         self.build()
@@ -112,7 +122,7 @@ class Application(object):
             ValidationError if the app fails to build.
         """
 
-        if self.is_build_outdated:
+        if self.name and self.is_build_outdated:
             self.setup_environment()
             self.execute('pip install -r requirements.txt --process-dependency-links', verbose=True)  # noqa
             self.execute('python setup.py install', verbose=True)
