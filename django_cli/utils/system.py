@@ -81,20 +81,19 @@ def execute(
     # Capture stdout and stderr in the same stream
     command = u'%s 2>&1' % command
 
-    # Pipe output back into the main thread
-    out = subprocess.PIPE
-    err = subprocess.PIPE
+    if verbose:
+        out = stream
+        err = stream
+    else:
+        out = subprocess.PIPE
+        err = subprocess.PIPE
+
     process = subprocess.Popen(
         command,
         shell=True,
         stdout=out,
         stderr=err
     )
-
-    if verbose:
-        # Stream the results of the command into the given writer
-        for line in iter(process.stdout.readline, u''):
-            stream.write(line)
 
     # Wait for the process to complete
     stdout, _ = process.communicate()
@@ -119,3 +118,8 @@ def execute(
         return stdout
     else:
         return process
+
+
+def get_python_version():
+    version = execute('python --version', capture=True)
+    return '.'.join(version.split(' ')[1].split('.')[0:1])

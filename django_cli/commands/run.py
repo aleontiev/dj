@@ -9,7 +9,8 @@ from django_cli.application import get_current_application
         'ignore_unknown_options': True
     }
 )
-def command(args):
+def run(args):
+    """Run a command within the app's virtual environment."""
     if not args:
         raise ClickException('pass a command to run')
 

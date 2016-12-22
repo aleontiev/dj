@@ -4,13 +4,13 @@ from jinja2.exceptions import UndefinedError
 
 
 @click.command(cls=BlueprintLoaderCommand)
-def command(*args, **kwargs):
+def generate(*args, **kwargs):
     """Generate a code stub using the given blueprint."""
     pass
 
 
-@command.resultcallback()
-def generate(context, application=None, blueprint=None, **kwargs):
+@generate.resultcallback()
+def generate_callback(context, application=None, blueprint=None, **kwargs):
     """
     Arguments:
         application: represents current application code

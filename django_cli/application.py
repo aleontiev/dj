@@ -1,6 +1,7 @@
 import os
 from .addon import Addon
 from .generator import Generator
+from .dependencies import DependencyManager
 
 from .utils.imports import parse_setup
 from .utils.system import (
@@ -8,7 +9,8 @@ from .utils.system import (
     get_last_touched,
     get_files,
     touch,
-    execute
+    execute,
+    get_python_version
 )
 
 
@@ -26,7 +28,8 @@ class Application(object):
         # TODO: generalize this
         self.build_directory = os.path.join(self.source_directory, '.venv')
         self.packages_directory = os.path.join(
-            self.build_directory, 'lib/python2.7/site-packages'
+            self.build_directory,
+            'lib/python%s/site-packages' % get_python_version()
         )
         self.activate_script = os.path.join(
             self.build_directory,
@@ -110,9 +113,14 @@ class Application(object):
             print 'Creating virtual environment...'
             try:
                 execute('virtualenv %s' % self.build_directory)
-            except:
-                print 'Failed, try running "pip install virtualenv".'
-                raise
+            except Exception as e:
+                raise Exception(
+                    'Failed to create environment: \n%s\n'
+                    'If you are using a system version of Python:\n'
+                    '    Run "sudo pip install virtualenv"\n'
+                    'If you are using pyenv:\n'
+                    '    Run "pip install virtualenv"\n' % str(e)
+                )
 
     def build(self):
         """Builds the app in a virtual environment.
@@ -140,6 +148,18 @@ class Application(object):
         """Generate a blueprint within this application."""
         generator = Generator(self, blueprint, context)
         return generator.generate()
+
+    def add(self, addon, dev=False):
+        """Add a new dependency and install it."""
+        dest = 'requirements.txt' if dev else 'install_requires.txt'
+        dependencies = DependencyManager(
+            os.path.join(
+                self.source_directory,
+                dest
+            )
+        )
+        dependencies.add(addon)
+        self.build()
 
 # singleton application instance
 current_application = None

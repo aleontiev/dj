@@ -1,6 +1,9 @@
 import click
+from .generate import generate
 
 
 @click.command()
-def command():
-    pass
+@click.argument('name')
+def init(name):
+    """Create a new Django app in the current directory."""
+    generate.main()

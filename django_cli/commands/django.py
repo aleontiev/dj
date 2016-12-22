@@ -1,18 +1,26 @@
 import sys, os
 import click
 from django_cli.commands.base import MultiCommand
-from .run import command as run_command
-from .init import command as init_command
-from .generate import command as generate_command
-from .install import command as install_command
 
+from .shell import shell
+from .run import run
+from .init import init
+from .generate import generate
+from .add import add
+from .migrate import migrate
+from .makemigrations import makemigrations
+from .runserver import runserver
 
 class DjangoMultiCommand(MultiCommand):
     commands = {
-        'run': run_command,
-        'init': init_command,
-        'generate': generate_command,
-        'install': install_command
+        'migrate': migrate,
+        'migrations': makemigrations,
+        'server': runserver,
+        'shell': shell,
+        'run': run,
+        'init': init,
+        'generate': generate,
+        'add': add
     }
 
 

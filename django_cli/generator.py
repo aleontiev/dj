@@ -88,6 +88,6 @@ class Generator(object):
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
-                    print 'generated %s' % relative_target
+                    print 'Generated %s' % relative_target
                 if action == 'm':
                     raise Exception('merge is not implemented')

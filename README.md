@@ -33,19 +33,19 @@ Django CLI distributes with PyInstaller and runs within an isolated Python envir
 Run `django --help` to see a list of supported commands.
 Run `django SUBCOMMAND --help` for help on any specific subcommand:
 
-### django init
+### django init NAME
 
 Sets up a shell Django project in the current directory.
 This command will prompt for all optional arguments, unless passed in.
 
-### django install ADDON[@VERSION]
+### django adds ADDON[@VERSION]
 
-Imports a Django CLI addon or PyPi package into the current project.
+Adds a Django CLI addon or PyPi package into the current project.
 
 If `--dev` is passed, the addon will only be required for testing and local development.
 Otherwise, the addon will be treated as a core package dependency.
 
-In the case of a CLI addon, the addon's initializer will be executed.
+If this is a Django CLI, the addon's initializer will be generated.
 
 ### django generate [ADDON.]BLUEPRINT [...ARGS]
 
@@ -55,6 +55,7 @@ of an addon and may take several arguments.
 The following core blueprints are supported:
 
 * model NAME
+* command NAME
 
 ### django run COMMAND [...ARGS]
 
