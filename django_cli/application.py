@@ -125,15 +125,16 @@ class Application(object):
 
         if self.name and self.is_build_outdated:
             self.setup_environment()
-            self.execute('pip install -r requirements.txt --process-dependency-links', verbose=True)  # noqa
+            print 'Building...'
+            self.execute('pip install -r requirements.txt --process-dependency-links')  # noqa
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
         return execute('. %s; %s' % (self.activate_script, command), **kwargs)
 
-    def run(self, command, verbose=True):
+    def run(self, command, **kwargs):
         self.build()
-        return self.execute(command, verbose=verbose)
+        return self.execute(command, **kwargs)
 
     def generate(self, blueprint, context):
         """Generate a blueprint within this application."""

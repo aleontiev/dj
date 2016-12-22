@@ -93,7 +93,7 @@ def execute(
 
     if verbose:
         # Stream the results of the command into the given writer
-        for line in iter(process.stdout.readline, ''):
+        for line in iter(process.stdout.readline, u''):
             stream.write(line)
 
     # Wait for the process to complete
@@ -104,13 +104,14 @@ def execute(
 
     if abort and process.returncode != 0:
         message = (
-            u'Error (%d) running "%s":\n'
-            '====================\n'
-            '%s\n'
-            '====================\n' % (
+            u'Error #%d running "%s"%s' % (
                 process.returncode,
                 command,
-                stdout
+                ':\n====================\n'
+                '%s\n'
+                '====================\n' % (
+                    stdout
+                ) if stdout else ''
             )
         )
         raise Exception(message)
