@@ -3,6 +3,7 @@ import tempfile
 import shutil
 import os
 import click
+from django_cli.utils.redbaron import merge
 from django_cli.utils.jinja import (
     strip_extension,
     render_from_string,
@@ -82,12 +83,23 @@ class Generator(object):
                         action = 'r'
 
                 if action == 's':
-                    print 'skipped %s' % relative_target
+                    print 'Skipped %s.' % relative_target
                     continue
                 if action == 'r':
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
-                    print 'Generated %s' % relative_target
+                    print 'Generated %s.' % relative_target
                 if action == 'm':
+                    with open(target, 'r') as target_file:
+                        with open(source, 'r') as source_file:
+                            merged_fst = merge(
+                                target_file.read(),
+                                source_file.read()
+                            )
+                    with open(target, 'w') as target_file:
+                        target_file.write(merged_fst.dumps())
+
+                    print 'Merged %s.' % relative_target
                     raise Exception('merge is not implemented')
+
