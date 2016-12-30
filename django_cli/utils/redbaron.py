@@ -19,6 +19,10 @@ def get_id(node):
         return node.value.dumps()
     if isinstance(node, ImportNode):
         return node.name.dumps()
+    if isinstance(node, DefNode):
+        return node.name
+    if isinstance(node, ReturnNode):
+        return 'ReturnNode'
     return None
 
 
@@ -35,14 +39,14 @@ def merge(source, delta):
         source_value.update(delta_value)
         return RedBaron(str(source_value))[0].dumps()
 
-    elif isinstance(source, ListNode) and isinstance(delta, ListNode):
+    if isinstance(source, ListNode) and isinstance(delta, ListNode):
         # two lists
         source_value = source.to_python()
         delta_value = delta.to_python()
-        value = merge_lists(source, delta)
+        value = merge_lists(source_value, delta_value)
         return RedBaron(str(value))[0].dumps()
 
-    elif isinstance(source, LiteralyEvaluable) and isinstance(delta, LiteralyEvaluable):
+    if isinstance(source, LiteralyEvaluable) and isinstance(delta, LiteralyEvaluable):
         # all other literals -> take new value
         return delta
 
@@ -50,20 +54,23 @@ def merge(source, delta):
         source, FromImportNode
     ) and isinstance(delta, FromImportNode):
         targets = merge_lists(
-            [repr(x) for x in source.targets],
-            [repr(x) for x in delta.targets]
+            [str(x) for x in source.targets],
+            [str(x) for x in delta.targets]
         )
         source.targets = ','.join(targets)
         return source
 
-    elif isinstance(source, AssignmentNode) and isinstance(delta, AssignmentNode):
+    if isinstance(source, AssignmentNode) and isinstance(delta, AssignmentNode):
         source.value = merge(source.value, delta.value)
         return source
 
-    elif isinstance(source, ImportNode) and isinstance(delta, ImportNode):
+    if isinstance(source, ImportNode) and isinstance(delta, ImportNode):
         return delta
 
-    elif hasattr(source, 'node_list') and hasattr(delta, 'node_list'):
+    if isinstance(source, ReturnNode) and isinstance(delta, ReturnNode):
+        return delta
+
+    if hasattr(source, 'node_list') and hasattr(delta, 'node_list'):
         # two node lists
         for delta_node in delta:
             found = False
@@ -85,5 +92,4 @@ def merge(source, delta):
                 source.append(delta_node)
         return source.dumps()
 
-    else:
-        raise Exception("Can't merge %s into %s" % (delta, source))
+    raise Exception("Can't merge %s into %s" % (delta, source))

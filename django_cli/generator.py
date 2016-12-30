@@ -93,12 +93,12 @@ class Generator(object):
                 if action == 'm':
                     with open(target, 'r') as target_file:
                         with open(source, 'r') as source_file:
-                            merged_fst = merge(
+                            merged = merge(
                                 target_file.read(),
                                 source_file.read()
                             )
                     with open(target, 'w') as target_file:
-                        target_file.write(merged_fst.dumps())
+                        target_file.write(merged)
 
                     print 'Merged %s.' % relative_target
                     raise Exception('merge is not implemented')
