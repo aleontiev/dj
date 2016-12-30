@@ -73,23 +73,27 @@ class Generator(object):
                 if (
                     os.path.exists(target)
                     and not filecmp.cmp(source, target, shallow=False)
+                    and os.stat(target).st_size > 0
                 ):
+                    # target exists, is not empty, and does not
+                    # match source
+                    default = 'm'
                     action = click.prompt(
                         '%s already exists, '
-                        '[R]eplace, [s]kip, or [m]erge?' % relative_target,
-                        default='r'
+                        '[r]eplace, [s]kip, or [m]erge?' % relative_target,
+                        default=default
                     ).lower()
                     if action not in {'r', 'm', 's'}:
-                        action = 'r'
+                        action = default
 
                 if action == 's':
-                    print 'Skipped %s.' % relative_target
+                    print 'Skipped %s' % relative_target
                     continue
                 if action == 'r':
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
-                    print 'Generated %s.' % relative_target
+                    print 'Generated %s' % relative_target
                 if action == 'm':
                     with open(target, 'r') as target_file:
                         with open(source, 'r') as source_file:
@@ -100,6 +104,4 @@ class Generator(object):
                     with open(target, 'w') as target_file:
                         target_file.write(merged)
 
-                    print 'Merged %s.' % relative_target
-                    raise Exception('merge is not implemented')
-
+                    print 'Merged %s' % relative_target
