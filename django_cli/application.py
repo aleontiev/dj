@@ -1,4 +1,5 @@
 import os
+import sys
 from .addon import Addon
 from .generator import Generator
 from .dependencies import DependencyManager
@@ -10,20 +11,26 @@ from .utils.system import (
     get_files,
     touch,
     execute,
-    get_python_version
+    get_python_version,
+    check_virtualenv
 )
 
 
 class Application(object):
 
-    DEPENDENCY_FILES = [
-        'install_requires.txt',
-        'dependency_links.txt',
-        'setup.py',
-        'requirements.txt'
-    ]
-
-    def __init__(self):
+    def __init__(
+        self,
+        stdout=sys.stdout
+    ):
+        self.dependencies = 'requirements.txt'
+        self.dev_dependencies = '%s.dev' % self.dependencies
+        self.setup_file = 'setup.py'
+        self.dependency_files = (
+            self.dependencies,
+            self.dev_dependencies,
+            self.setup_file,
+        )
+        self.stdout = stdout
         self.source_directory = os.getcwd()
         # TODO: generalize this
         self.build_directory = os.path.join(self.source_directory, '.venv')
@@ -92,7 +99,7 @@ class Application(object):
         # timestamp of last code change
         dependency_files = [
             os.path.join(self.source_directory, file) for file in
-            self.DEPENDENCY_FILES
+            self.dependency_files
         ]
         code_files = list(get_files(
             self.application_directory,
@@ -108,19 +115,11 @@ class Application(object):
         code_last_touched = self.code_last_touched
         return not build_last_touched or build_last_touched < code_last_touched
 
-    def setup_environment(self):
+    def setup(self):
         if not os.path.exists(self.activate_script):
-            print 'Creating virtual environment...'
-            try:
-                execute('virtualenv %s' % self.build_directory)
-            except Exception as e:
-                raise Exception(
-                    'Failed to create environment: \n%s\n'
-                    'If you are using a system version of Python:\n'
-                    '    Run "sudo pip install virtualenv"\n'
-                    'If you are using pyenv:\n'
-                    '    Run "pip install virtualenv"\n' % str(e)
-                )
+            self.stdout.write('Creating virtual environment...\n')
+            check_virtualenv()
+            execute('virtualenv %s' % self.build_directory)
 
     def build(self):
         """Builds the app in a virtual environment.
@@ -132,9 +131,12 @@ class Application(object):
         """
 
         if self.name and self.is_build_outdated:
-            self.setup_environment()
-            print 'Building...'
-            self.execute('pip install -r requirements.txt --process-dependency-links')  # noqa
+            self.setup()
+            self.stdout.write('Building application...\n')
+            self.execute('pip install -r %s -r %s' % (
+                self.dependencies,
+                self.dev_dependencies,
+            ))
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
@@ -151,11 +153,10 @@ class Application(object):
 
     def add(self, addon, dev=False):
         """Add a new dependency and install it."""
-        dest = 'requirements.txt' if dev else 'install_requires.txt'
         dependencies = DependencyManager(
             os.path.join(
                 self.source_directory,
-                dest
+                self.dev_dependencies if dev else self.dependencies
             )
         )
         dependencies.add(addon)

@@ -123,3 +123,12 @@ def execute(
 def get_python_version():
     version = execute('python --version', capture=True)
     return '.'.join(version.split(' ')[1].split('.')[0:1])
+
+def check_virtualenv():
+    try:
+        execute('which virtualenv')
+    except:
+        get_virutalenv()
+
+def get_virtualenv():
+    execute('pip install virtualenv')

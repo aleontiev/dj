@@ -6,6 +6,7 @@ class Dependency(object):
     parse_regex = re.compile(r'^([A-Za-z][-A-Za-z_.]+)([=><]+)([0-9.]+)$')
 
     def __init__(self, value):
+        value = value.strip('\n')
         self.value = value
         self.name, self.operator, self.version = Dependency.parse(value)
 
@@ -61,11 +62,15 @@ class DependencyManager(object):
         dependencies = OrderedDict()
         with open(self.source, 'r') as f:
             for line in f.readlines():
-                d = Dependency(line)
-                dependencies[d.name] = d
+                if line:
+                    d = Dependency(line)
+                    dependencies[d.name] = d
         return dependencies
 
     def _save(self):
         with open(self.source, 'w') as f:
             for dependency in self.dependencies.values():
-                f.write('%s\n' % str(dependency))
+                dependency = str(dependency)
+                if not dependency.endswith('\n'):
+                    dependency = dependency + '\n'
+                f.write(dependency)

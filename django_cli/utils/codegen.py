@@ -46,7 +46,9 @@ def merge(source, delta):
         value = merge_lists(source_value, delta_value)
         return RedBaron(str(value))[0].dumps()
 
-    if isinstance(source, LiteralyEvaluable) and isinstance(delta, LiteralyEvaluable):
+    if isinstance(
+            source, LiteralyEvaluable) and isinstance(
+            delta, LiteralyEvaluable):
         # all other literals -> take new value
         return delta
 
@@ -60,7 +62,9 @@ def merge(source, delta):
         source.targets = ','.join(targets)
         return source
 
-    if isinstance(source, AssignmentNode) and isinstance(delta, AssignmentNode):
+    if isinstance(
+            source, AssignmentNode) and isinstance(
+            delta, AssignmentNode):
         source.value = merge(source.value, delta.value)
         return source
 

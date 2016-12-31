@@ -3,7 +3,7 @@ import tempfile
 import shutil
 import os
 import click
-from django_cli.utils.redbaron import merge
+from django_cli.utils.codegen import merge
 from django_cli.utils.jinja import (
     strip_extension,
     render_from_string,
