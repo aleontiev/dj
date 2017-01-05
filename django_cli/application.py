@@ -1,4 +1,5 @@
 import os
+import sys
 from .addon import Addon
 from .generator import Generator
 from .dependencies import DependencyManager
@@ -19,14 +20,21 @@ class Application(object):
     CONFIG_DIRECTORY = '.django-cli'
     CONFIG_FILE = 'config.yml'
     VIRTUAL_ENV_NAME = 'build'
-    DEPENDENCY_FILES = [
-        'setup.py',
-        'requirements.txt'
-        'requirements.txt.dev'
-    ]
     VERSION = "2.7.13"
 
-    def __init__(self):
+    def __init__(
+        self,
+        stdout=sys.stdout
+    ):
+        self.dependencies = 'requirements.txt'
+        self.dev_dependencies = '%s.dev' % self.dependencies
+        self.setup_file = 'setup.py'
+        self.dependency_files = (
+            self.dependencies,
+            self.dev_dependencies,
+            self.setup_file,
+        )
+        self.stdout = stdout
         self.source_directory = os.getcwd()
         self.runtime = Runtime(self.VERSION)
         self.config_directory = os.path.join(
@@ -110,7 +118,7 @@ class Application(object):
         # timestamp of last code change
         dependency_files = [
             os.path.join(self.source_directory, file) for file in
-            self.DEPENDENCY_FILES
+            self.dependency_files
         ]
         code_files = list(get_files(
             self.application_directory,
@@ -155,8 +163,11 @@ class Application(object):
         """
 
         if self.name and self.is_build_outdated:
-            print 'Building...'
-            self.execute('pip install -r requirements.txt')  # noqa
+            self.stdout.write('Building application...\n')
+            self.execute('pip install -r %s -r %s' % (
+                self.dependencies,
+                self.dev_dependencies,
+            ))
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
@@ -173,11 +184,10 @@ class Application(object):
 
     def add(self, addon, dev=False):
         """Add a new dependency and install it."""
-        dest = 'requirements.txt' if dev else 'install_requires.txt'
         dependencies = DependencyManager(
             os.path.join(
                 self.source_directory,
-                dest
+                self.dev_dependencies if dev else self.dependencies
             )
         )
         dependencies.add(addon)

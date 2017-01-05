@@ -1,1 +1,2 @@
 -e .
+Django=={{django_version}}

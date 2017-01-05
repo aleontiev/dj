@@ -3,6 +3,7 @@ import tempfile
 import shutil
 import os
 import click
+from django_cli.utils.codegen import merge
 from django_cli.utils.jinja import (
     strip_extension,
     render_from_string,
@@ -72,17 +73,21 @@ class Generator(object):
                 if (
                     os.path.exists(target)
                     and not filecmp.cmp(source, target, shallow=False)
+                    and os.stat(target).st_size > 0
                 ):
+                    # target exists, is not empty, and does not
+                    # match source
+                    default = 'm'
                     action = click.prompt(
                         '%s already exists, '
-                        '[R]eplace, [s]kip, or [m]erge?' % relative_target,
-                        default='r'
+                        '[r]eplace, [s]kip, or [m]erge?' % relative_target,
+                        default=default
                     ).lower()
                     if action not in {'r', 'm', 's'}:
-                        action = 'r'
+                        action = default
 
                 if action == 's':
-                    print 'skipped %s' % relative_target
+                    print 'Skipped %s' % relative_target
                     continue
                 if action == 'r':
                     with open(source, 'r') as source_file:
@@ -90,4 +95,13 @@ class Generator(object):
                             target_file.write(source_file.read())
                     print 'Generated %s' % relative_target
                 if action == 'm':
-                    raise Exception('merge is not implemented')
+                    with open(target, 'r') as target_file:
+                        with open(source, 'r') as source_file:
+                            merged = merge(
+                                target_file.read(),
+                                source_file.read()
+                            )
+                    with open(target, 'w') as target_file:
+                        target_file.write(merged)
+
+                    print 'Merged %s' % relative_target
