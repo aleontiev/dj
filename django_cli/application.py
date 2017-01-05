@@ -9,31 +9,49 @@ from .utils.system import (
     get_last_touched,
     get_files,
     touch,
-    execute,
-    get_python_version
 )
+from .config import Config
+from .runtime import Runtime
 
 
 class Application(object):
 
+    CONFIG_DIRECTORY = '.django-cli'
+    CONFIG_FILE = 'config.yml'
+    VIRTUAL_ENV_NAME = 'build'
     DEPENDENCY_FILES = [
-        'install_requires.txt',
-        'dependency_links.txt',
         'setup.py',
         'requirements.txt'
+        'requirements.txt.dev'
     ]
+    VERSION = "2.7.13"
 
     def __init__(self):
         self.source_directory = os.getcwd()
-        # TODO: generalize this
-        self.build_directory = os.path.join(self.source_directory, '.venv')
+        self.runtime = Runtime(self.VERSION)
+        self.config_directory = os.path.join(
+            self.source_directory,
+            self.CONFIG_DIRECTORY
+        )
+        os.makedirs(self.config_directory)
+        self.config_file = os.path.join(
+            self.config_directory,
+            self.CONFIG_FILE
+        )
+
+        self.config = Config(self.config_directory)
+        self.env_directory = os.path.join(
+            self.config_directory,
+            self.VIRTUAL_ENV_NAME
+        )
+        self.bin_directory = os.path.join(self.env_directory, 'bin')
         self.packages_directory = os.path.join(
-            self.build_directory,
-            'lib/python%s/site-packages' % get_python_version()
+            self.env_directory,
+            'lib/python%s/site-packages' % self.runtime.version
         )
         self.activate_script = os.path.join(
-            self.build_directory,
-            'bin/activate'
+            self.bin_directory,
+            'activate'
         )
 
     def __unicode__(self):
@@ -108,22 +126,27 @@ class Application(object):
         code_last_touched = self.code_last_touched
         return not build_last_touched or build_last_touched < code_last_touched
 
-    def setup_environment(self):
-        if not os.path.exists(self.activate_script):
-            print 'Creating virtual environment...'
+    @property
+    def environment(self):
+        if not hasattr(self, '_environment'):
             try:
-                execute('virtualenv %s' % self.build_directory)
+                self._environment = self.runtime.create_environment(
+                    self.env_directory
+                )
+                self._environment.execute(
+                    'pip install -U pip'
+                )
+                self._environment.execute(
+                    'pip install -U setuptools'
+                )
             except Exception as e:
                 raise Exception(
-                    'Failed to create environment: \n%s\n'
-                    'If you are using a system version of Python:\n'
-                    '    Run "sudo pip install virtualenv"\n'
-                    'If you are using pyenv:\n'
-                    '    Run "pip install virtualenv"\n' % str(e)
+                    'Failed to create environment: \n%s\n' % str(e)
                 )
+        return self._environment
 
     def build(self):
-        """Builds the app in a virtual environment.
+        """Builds the app in the app's environment.
 
         Only builds if the build is out-of-date and if the app is non-empty.
 
@@ -132,13 +155,12 @@ class Application(object):
         """
 
         if self.name and self.is_build_outdated:
-            self.setup_environment()
             print 'Building...'
-            self.execute('pip install -r requirements.txt --process-dependency-links')  # noqa
+            self.execute('pip install -r requirements.txt')  # noqa
             touch(self.activate_script)
 
     def execute(self, command, **kwargs):
-        return execute('. %s; %s' % (self.activate_script, command), **kwargs)
+        return self.environment.execute(command)
 
     def run(self, command, **kwargs):
         self.build()

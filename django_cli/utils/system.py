@@ -120,6 +120,9 @@ def execute(
         return process
 
 
-def get_python_version():
-    version = execute('python --version', capture=True)
-    return '.'.join(version.split(' ')[1].split('.')[0:1])
+def exists(program):
+    try:
+        execute("command -v %s" % program, verbose=False)
+        return True
+    except:
+        return False
