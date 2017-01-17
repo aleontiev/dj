@@ -1,7 +1,6 @@
 import click
 from .run import run
 
-
 @click.command()
 def migrate():
     """Run Django migrations."""

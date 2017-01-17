@@ -1,6 +1,10 @@
 from django_cli.application import get_current_application
 from django_cli.blueprint import get_core_blueprints
+from django_cli.utils.system import StyleStdout
+from django_cli.utils.style import format_command
 import click
+
+stdout = StyleStdout()
 
 
 class BlueprintLoaderCommand(click.MultiCommand):
@@ -46,6 +50,16 @@ class BlueprintLoaderCommand(click.MultiCommand):
     def invoke(self, context):
         args = context.protected_args + context.args
         name = args[0]
+        stdout.write(
+            format_command( 
+                'Generating',
+                '%s %s' % (
+                    name,
+                    args[1] if len(args) > 1 else ''
+                )
+            )
+        )
+
         try:
             if name not in self.blueprints:
                 context.fail(
@@ -73,7 +87,10 @@ class MultiCommand(click.MultiCommand):
             if not matches:
                 return None
             elif len(matches) > 1:
-                print 'Did you mean one of: %s' % ', '.join(sorted(matches))
+                stdout.write(
+                    'Did you mean one of: %s' %
+                    ', '.join(
+                        sorted(matches)))
                 return None
             else:
                 name = matches[0]

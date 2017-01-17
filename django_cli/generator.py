@@ -9,11 +9,14 @@ from django_cli.utils.jinja import (
     render_from_string,
     render_from_file
 )
+from django_cli.utils.system import stdout as _stdout
+from django_cli.utils.style import white
 
 
 class Generator(object):
 
-    def __init__(self, application, blueprint, context):
+    def __init__(self, application, blueprint, context, stdout=None):
+        self.stdout = stdout or _stdout
         self.application = application
         self.blueprint = blueprint
         self.context = context
@@ -56,7 +59,7 @@ class Generator(object):
     def merge(self):
         """Merges the rendered blueprint into the application."""
         temp_dir = self.temp_dir
-        app_dir = self.application.source_directory
+        app_dir = self.application.directory
         for root, dirs, files in os.walk(temp_dir):
             for directory in dirs:
                 directory = os.path.join(root, directory)
@@ -79,21 +82,27 @@ class Generator(object):
                     # match source
                     default = 'm'
                     action = click.prompt(
-                        '%s already exists, '
-                        '[r]eplace, [s]kip, or [m]erge?' % relative_target,
+                        click.style(
+                            '%s already exists, '
+                            '[r]eplace, [s]kip, or [m]erge?' % relative_target,
+                            fg='yellow'
+                        ),
                         default=default
                     ).lower()
                     if action not in {'r', 'm', 's'}:
                         action = default
 
                 if action == 's':
-                    print 'Skipped %s' % relative_target
+                    self.stdout.write(
+                        '? %s' % white(relative_target),
+                        fg='yellow'
+                    )
                     continue
                 if action == 'r':
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
-                    print 'Generated %s' % relative_target
+                    self.stdout.write('+ %s' % white(relative_target), fg='green')
                 if action == 'm':
                     with open(target, 'r') as target_file:
                         with open(source, 'r') as source_file:
@@ -104,4 +113,4 @@ class Generator(object):
                     with open(target, 'w') as target_file:
                         target_file.write(merged)
 
-                    print 'Merged %s' % relative_target
+                    self.stdout.write('> %s' % white(relative_target), fg='yellow')

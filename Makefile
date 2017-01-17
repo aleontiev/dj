@@ -1,4 +1,5 @@
 distribute: clean
+	pip install -U virtualenv
 	virtualenv .v
 	. .v/bin/activate; pip install -r requirements.txt
 	. .v/bin/activate; pip install pyinstaller

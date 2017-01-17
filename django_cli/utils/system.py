@@ -1,4 +1,5 @@
 import os
+import click
 import sys
 import subprocess
 
@@ -126,3 +127,16 @@ def exists(program):
         return True
     except:
         return False
+
+
+class StyleStdout(object):
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def write(self, message, **kwargs):
+        copy = self.kwargs.copy()
+        copy.update(kwargs)
+        click.echo(click.style(message, **copy))
+
+stdout = StyleStdout(fg='blue')

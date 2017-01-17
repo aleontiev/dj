@@ -1,5 +1,7 @@
 from collections import OrderedDict
 import re
+from django_cli.utils.system import stdout
+from django_cli.utils.style import white, green, red, yellow
 
 
 class Dependency(object):
@@ -43,14 +45,22 @@ class DependencyManager(object):
         self.source = source
 
     def add(self, value):
-        dep = Dependency(value)
-        old = self.dependencies.get(dep.name)
-        self.dependencies[dep.name] = dep
-        self._save()
-        print 'Added %s%s' % (
-            value,
-            ' (was %s)' % str(old) if old and old != dep else ''
-        )
+        new = Dependency(value)
+        old = self.dependencies.get(new.name)
+        self.dependencies[new.name] = new
+        if old is None or str(old) != str(new):
+            self._save()
+            if old:
+                stdout.write(
+                    red('- ') +
+                    white(str(old))
+                )
+            stdout.write(
+                green('+ ') +
+                white(str(new))
+            )
+        else:
+            stdout.write(yellow('%s already installed.' % str(new)))
 
     @property
     def dependencies(self):

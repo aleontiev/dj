@@ -1,6 +1,7 @@
 import click
 from django_cli.commands.base import BlueprintLoaderCommand
 from jinja2.exceptions import UndefinedError
+from .base import stdout
 
 
 @click.command(cls=BlueprintLoaderCommand)

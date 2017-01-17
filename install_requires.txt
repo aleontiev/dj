@@ -1,4 +1,5 @@
 click
+pyyaml
 jinja2
 inflection
 redbaron

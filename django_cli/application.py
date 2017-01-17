@@ -1,9 +1,10 @@
+from __future__ import absolute_import
+
 import os
-import sys
+import click
 from .addon import Addon
 from .generator import Generator
 from .dependencies import DependencyManager
-
 from .utils.imports import parse_setup
 from .utils.system import (
     get_directories,
@@ -11,65 +12,44 @@ from .utils.system import (
     get_files,
     touch,
 )
+from .utils.style import format_command
 from .config import Config
 from .runtime import Runtime
+from .utils.system import stdout as _stdout
 
 
 class Application(object):
 
-    CONFIG_DIRECTORY = '.django-cli'
-    CONFIG_FILE = 'config.yml'
     VIRTUAL_ENV_NAME = 'build'
-    VERSION = "2.7.13"
 
     def __init__(
         self,
-        stdout=sys.stdout
+        stdout=None,
+        directory=None
     ):
-        self.dependencies = 'requirements.txt'
-        self.dev_dependencies = '%s.dev' % self.dependencies
+        self.stdout = stdout or _stdout
+        self.directory = directory or os.getcwd()
+        self.config = Config(self.directory)
+
         self.setup_file = 'setup.py'
+        self.requirements = self.config.get('requirements')
+        self.dev_requirements = self.config.get('devRequirements')
         self.dependency_files = (
-            self.dependencies,
-            self.dev_dependencies,
+            self.requirements,
+            self.dev_requirements,
             self.setup_file,
         )
-        self.stdout = stdout
-        self.source_directory = os.getcwd()
-        self.runtime = Runtime(self.VERSION)
-        self.config_directory = os.path.join(
-            self.source_directory,
-            self.CONFIG_DIRECTORY
-        )
-        os.makedirs(self.config_directory)
-        self.config_file = os.path.join(
-            self.config_directory,
-            self.CONFIG_FILE
-        )
-
-        self.config = Config(self.config_directory)
-        self.env_directory = os.path.join(
-            self.config_directory,
-            self.VIRTUAL_ENV_NAME
-        )
-        self.bin_directory = os.path.join(self.env_directory, 'bin')
-        self.packages_directory = os.path.join(
-            self.env_directory,
-            'lib/python%s/site-packages' % self.runtime.version
-        )
-        self.activate_script = os.path.join(
-            self.bin_directory,
-            'activate'
-        )
+        runtime = self.config.get('runtime')
+        self.runtime = Runtime(runtime)
 
     def __unicode__(self):
-        return '%s (%s)' % (self.name, self.source_directory)
+        return '%s (%s)' % (self.name, self.directory)
 
     @property
     def name(self):
         if not hasattr(self, '_name'):
             name = None
-            setup_file = os.path.join(self.source_directory, 'setup.py')
+            setup_file = os.path.join(self.directory, self.setup_file)
             if os.path.exists(setup_file):
                 try:
                     name = parse_setup(setup_file)['name']
@@ -86,7 +66,7 @@ class Application(object):
     def application_directory(self):
         if not hasattr(self, '_application_directory'):
             self._application_directory = os.path.join(
-                self.source_directory,
+                self.directory,
                 self.name
             )
         return self._application_directory
@@ -96,7 +76,7 @@ class Application(object):
 
         addons = []
         for directory in get_directories(
-            self.packages_directory,
+            self.environment.package_directory,
             filter=lambda x: x.endswith('/blueprints')
         ):
             parent_directory = '/'.join(directory.split('/')[0:-1])
@@ -111,13 +91,13 @@ class Application(object):
     @property
     def build_last_touched(self):
         # timestamp of last build
-        return get_last_touched(self.activate_script)
+        return get_last_touched(self.environment.activate_script)
 
     @property
     def code_last_touched(self):
         # timestamp of last code change
         dependency_files = [
-            os.path.join(self.source_directory, file) for file in
+            os.path.join(self.directory, file) for file in
             self.dependency_files
         ]
         code_files = list(get_files(
@@ -137,20 +117,9 @@ class Application(object):
     @property
     def environment(self):
         if not hasattr(self, '_environment'):
-            try:
-                self._environment = self.runtime.create_environment(
-                    self.env_directory
-                )
-                self._environment.execute(
-                    'pip install -U pip'
-                )
-                self._environment.execute(
-                    'pip install -U setuptools'
-                )
-            except Exception as e:
-                raise Exception(
-                    'Failed to create environment: \n%s\n' % str(e)
-                )
+            self._environment = self.runtime.create_environment(
+                self.config.environment_path
+            )
         return self._environment
 
     def build(self):
@@ -163,15 +132,15 @@ class Application(object):
         """
 
         if self.name and self.is_build_outdated:
-            self.stdout.write('Building application...\n')
+            self.stdout.write(format_command('Building'))
             self.execute('pip install -r %s -r %s' % (
-                self.dependencies,
-                self.dev_dependencies,
-            ))
-            touch(self.activate_script)
+                self.requirements,
+                self.dev_requirements
+            ), verbose=True)
+            touch(self.environment.activate_script)
 
     def execute(self, command, **kwargs):
-        return self.environment.execute(command)
+        return self.environment.execute(command, **kwargs)
 
     def run(self, command, **kwargs):
         self.build()
@@ -186,8 +155,8 @@ class Application(object):
         """Add a new dependency and install it."""
         dependencies = DependencyManager(
             os.path.join(
-                self.source_directory,
-                self.dev_dependencies if dev else self.dependencies
+                self.directory,
+                self.dev_requirements if dev else self.requirements
             )
         )
         dependencies.add(addon)
