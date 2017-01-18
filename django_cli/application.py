@@ -33,11 +33,6 @@ class Application(object):
         self.setup_file = 'setup.py'
         self.requirements = self.config.get('requirements')
         self.dev_requirements = self.config.get('devRequirements')
-        self.dependency_files = (
-            self.requirements,
-            self.dev_requirements,
-            self.setup_file,
-        )
         runtime = self.config.get('runtime')
         self.runtime = Runtime(runtime)
 
@@ -88,30 +83,27 @@ class Application(object):
         return [x for s in blueprints for x in s]
 
     @property
-    def build_last_touched(self):
-        # timestamp of last build
-        return get_last_touched(self.environment.activate_script)
+    def requirements_last_modified(self):
+        return get_last_touched(
+            os.path.join(self.directory, self.requirements)
+        )
 
     @property
-    def code_last_touched(self):
+    def dev_requirements_last_modified(self):
+        return get_last_touched(
+            os.path.join(self.directory, self.dev_requirements)
+        )
+
+    @property
+    def app_last_modified(self):
         # timestamp of last code change
-        dependency_files = [
-            os.path.join(self.directory, file) for file in
-            self.dependency_files
-        ]
-        code_files = list(get_files(
+        app_files = list(get_files(
             self.application_directory,
             lambda x: x.endswith('.py'),
-        ))
+        )) + [os.path.join(self.directory, self.setup_file)]
         return max([
-            get_last_touched(file) for file in code_files + dependency_files
+            get_last_touched(file) for file in app_files
         ])
-
-    @property
-    def is_build_outdated(self):
-        build_last_touched = self.build_last_touched
-        code_last_touched = self.code_last_touched
-        return not build_last_touched or build_last_touched < code_last_touched
 
     @property
     def environment(self):
@@ -121,22 +113,47 @@ class Application(object):
             )
         return self._environment
 
+    def _get_build_token(self, key):
+        return os.path.join(
+            self.environment.virtual_directory, 'build.%s' % key
+        )
+
+    def _build(self, key, last_modified, cmd, verbose=True):
+        token = self._get_build_token(key)
+        last_built = get_last_touched(token)
+        if not last_built or last_built < last_modified:
+            self.stdout.write(format_command('Building', key))
+            self.execute(cmd, verbose=verbose)
+            touch(token)
+
     def build(self):
         """Builds the app in the app's environment.
 
-        Only builds if the build is out-of-date and if the app is non-empty.
+        Only builds if the build is out-of-date and is non-empty.
+        Builds in 3 stages: requirements, dev requirements, and app.
+        pip is used to install requirements, and setup.py is used to
+        install the app itself.
 
         Raises:
             ValidationError if the app fails to build.
         """
 
-        if self.name and self.is_build_outdated:
-            self.stdout.write(format_command('Building'))
-            self.execute('pip install -r %s -r %s' % (
-                self.requirements,
-                self.dev_requirements
-            ), verbose=True)
-            touch(self.environment.activate_script)
+        if self.name:
+            self._build(
+                'requirements',
+                self.requirements_last_modified,
+                'pip install -r %s' % self.requirements
+            )
+            self._build(
+                'dev requirements',
+                self.dev_requirements_last_modified,
+                'pip install -r %s' % self.dev_requirements
+            )
+            self._build(
+                'application',
+                self.app_last_modified,
+                'python setup.py install'
+            )
 
     def execute(self, command, **kwargs):
         return self.environment.execute(command, **kwargs)
@@ -163,8 +180,11 @@ class Application(object):
         dependencies = self.get_dependency_manager(dev=dev)
         other_dependencies = self.get_dependency_manager(dev=not dev)
         dependencies.add(addon)
-        other_dependencies.remove(addon, warn=False)
-        self.build()
+        try:
+            self.build()
+            other_dependencies.remove(addon, warn=False)
+        except:
+            dependencies.remove(addon)
 
     def remove(self, addon, dev=False):
         """Remove a dependency and uninstall it."""

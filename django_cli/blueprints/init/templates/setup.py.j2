@@ -11,12 +11,6 @@ VERSION = "{{ version }}"
 
 EXCLUDE_FROM_PACKAGES = []
 
-def install_requires(requirements):
-    return (
-        line for line in open(requirements).readlines()
-        if not line.startswith('-e')
-    )
-
 setup(
     author=AUTHOR,
     author_email=AUTHOR_EMAIL,
@@ -24,7 +18,6 @@ setup(
     include_package_data=True,
     long_description=open('README.md').read(),
     name=APP,
-    install_requires=install_requires('requirements.txt'),
     packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
     scripts=['manage.py'],
     test_suite='runtests.runtests',
