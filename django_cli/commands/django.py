@@ -7,20 +7,22 @@ from .run import run
 from .init import init
 from .generate import generate
 from .add import add
+from .remove import remove
 from .migrate import migrate
-from .makemigrations import makemigrations
-from .runserver import runserver
+from .server import server
+from .info import info
 
 class DjangoMultiCommand(MultiCommand):
     commands = {
         'migrate': migrate,
-        'migrations': makemigrations,
-        'server': runserver,
+        'server': server,
         'shell': shell,
         'run': run,
         'init': init,
         'generate': generate,
-        'add': add
+        'add': add,
+        'remove': remove,
+        'info': info
     }
 
 

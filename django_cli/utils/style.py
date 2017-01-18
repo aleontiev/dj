@@ -21,9 +21,9 @@ def blue(message):
     return click.style(message, fg='blue', bold=True)
 
 
-def format_command(a, b='', prefix='*'):
+def format_command(a, b='', prefix=''):
     return (
-        white('%s ' % prefix) +
+        white(prefix) +
         blue('%s: ' % a) + 
         white(b)
     )

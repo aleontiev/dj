@@ -5,8 +5,8 @@ from .base import stdout, format_command
 @click.argument('addon')
 @click.option('--dev', is_flag=True)
 @click.command()
-def add(addon, dev):
-    """Add a dependency."""
-    stdout.write(format_command('Adding', addon))
+def remove(addon, dev):
+    """Remove a dependency."""
+    stdout.write(format_command('Removing', addon))
     application = get_current_application()
-    application.add(addon, dev=dev)
+    application.remove(addon, dev=dev)

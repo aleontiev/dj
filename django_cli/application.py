@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 
 import os
-import click
 from .addon import Addon
 from .generator import Generator
 from .dependencies import DependencyManager
@@ -12,7 +11,7 @@ from .utils.system import (
     get_files,
     touch,
 )
-from .utils.style import format_command
+from .utils.style import format_command, red, white
 from .config import Config
 from .runtime import Runtime
 from .utils.system import stdout as _stdout
@@ -151,16 +150,40 @@ class Application(object):
         generator = Generator(self, blueprint, context)
         return generator.generate()
 
-    def add(self, addon, dev=False):
-        """Add a new dependency and install it."""
-        dependencies = DependencyManager(
+    def get_dependency_manager(self, dev=False):
+        return DependencyManager(
             os.path.join(
                 self.directory,
                 self.dev_requirements if dev else self.requirements
             )
         )
+
+    def add(self, addon, dev=False):
+        """Add a new dependency and install it."""
+        dependencies = self.get_dependency_manager(dev=dev)
+        other_dependencies = self.get_dependency_manager(dev=not dev)
         dependencies.add(addon)
+        other_dependencies.remove(addon, warn=False)
         self.build()
+
+    def remove(self, addon, dev=False):
+        """Remove a dependency and uninstall it."""
+        dependencies = self.get_dependency_manager(dev=dev)
+        other_dependencies = self.get_dependency_manager(dev=not dev)
+        removed = dependencies.remove(addon, warn=False)
+        if not removed:
+            removed = other_dependencies.remove(addon, warn=False)
+
+        if removed:
+            self.build()
+        else:
+            exception = '%s is not installed.' % white(str(addon))
+            self.stdout.write(red(exception))
+
+    def reset(self):
+        global current_application
+        current_application = Application()
+        return current_application
 
 # singleton application instance
 current_application = None

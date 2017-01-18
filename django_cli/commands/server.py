@@ -4,7 +4,7 @@ from .run import run
 
 @click.command()
 @click.argument('port', required=False)
-def runserver(port):
+def server(port):
     """Start the Django dev server."""
     args = ['manage.py', 'runserver']
     if port:

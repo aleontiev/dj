@@ -2,8 +2,9 @@ import os
 import click
 from .generate import generate
 from django_cli.config import Config
-from django_cli.application import Application
 from .base import stdout, format_command
+from .run import run
+from .generate import generate
 
 @click.command()
 @click.argument('name')
@@ -20,4 +21,6 @@ def init(name, runtime):
     config.set('runtime', runtime)
     config.save()
 
-    generate.main(['init', name])
+    generate.main(['init', name], standalone_mode=False)
+    stdout.write(format_command('Migrating'))
+    run.main(['manage.py', 'migrate'])

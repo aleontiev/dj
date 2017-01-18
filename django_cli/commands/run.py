@@ -1,6 +1,6 @@
 import click
 from click.exceptions import ClickException
-from django_cli.application import get_current_application
+from django_cli.application import Application
 from .base import stdout, format_command
 
 
@@ -17,5 +17,5 @@ def run(args):
         raise ClickException('pass a command to run')
 
     args = ' '.join(args)
-    application = get_current_application()
+    application = Application()
     application.run(args, verbose=True, abort=False)

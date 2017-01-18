@@ -44,23 +44,36 @@ class DependencyManager(object):
     def __init__(self, source):
         self.source = source
 
-    def add(self, value):
+    def add(self, value, warn=True):
         new = Dependency(value)
         old = self.dependencies.get(new.name)
         self.dependencies[new.name] = new
+        new_label = white(str(new))
+        old_label = white(str(old))
         if old is None or str(old) != str(new):
             self._save()
             if old:
-                stdout.write(
-                    red('- ') +
-                    white(str(old))
-                )
-            stdout.write(
-                green('+ ') +
-                white(str(new))
-            )
+                stdout.write(red('- ') + old_label)
+            stdout.write(green('+ ') + new_label)
+            return True
         else:
-            stdout.write(yellow('%s already installed.' % str(new)))
+            if warn:
+                stdout.write(yellow('%s already installed.' % new_label))
+            return False
+
+    def remove(self, value, warn=True):
+        new = Dependency(value)
+        old = self.dependencies.get(new.name)
+        old_label = white(str(old))
+        if old is not None:
+            self.dependencies.pop(new.name)
+            self._save()
+            stdout.write(red('- ') + old_label)
+            return True
+        else:
+            if warn:
+                stdout.write(yellow('%s not installed.' % old_label))
+            return False
 
     @property
     def dependencies(self):
