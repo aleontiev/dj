@@ -12,7 +12,14 @@ from .base import stdout
     }
 )
 def run(args):
-    """Run a command within the app's virtual environment."""
+    """Run a local command.
+
+    Examples:
+
+    $ django run manage.py runserver
+
+    ...
+    """
     stdout.write(style.format_command('Running', ' '.join(args)))
     if not args:
         raise ClickException('pass a command to run')

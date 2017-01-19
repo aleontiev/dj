@@ -9,7 +9,14 @@ from .base import stdout
 @click.option('--dev', is_flag=True)
 @click.command()
 def add(addon, dev):
-    """Add a dependency."""
+    """Add a dependency.
+
+    Examples:
+
+    $ django add dynamic-rest==1.5.0
+
+    + dynamic-rest == 1.5.0
+    """
     stdout.write(style.format_command('Adding', Dependency(addon).to_stdout()))
     application = get_current_application()
     application.add(addon, dev=dev)

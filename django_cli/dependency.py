@@ -84,6 +84,9 @@ class DependencyManager(object):
                 stdout.write('%s %s' % (new_label, yellow('not installed.')))
             return False
 
+    def get(self, key):
+        return self.dependencies.get(key)
+
     @property
     def dependencies(self):
         if not hasattr(self, '_dependencies'):

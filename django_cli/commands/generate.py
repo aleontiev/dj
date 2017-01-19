@@ -1,12 +1,11 @@
 import click
 from django_cli.commands.base import BlueprintLoaderCommand
 from jinja2.exceptions import UndefinedError
-from .base import stdout
 
 
 @click.command(cls=BlueprintLoaderCommand)
 def generate(*args, **kwargs):
-    """Generate a code stub using the given blueprint."""
+    """Generate a code stub."""
     pass
 
 

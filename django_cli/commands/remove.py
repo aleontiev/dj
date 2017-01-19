@@ -9,7 +9,14 @@ from .base import stdout
 @click.option('--dev', is_flag=True)
 @click.command()
 def remove(addon, dev):
-    """Remove a dependency."""
+    """Remove a dependency.
+
+    Examples:
+
+    $ django remove dynamic-rest
+
+    - dynamic-rest == 1.5.0
+    """
     stdout.write(style.format_command('Removing', Dependency(addon).name))
     application = get_current_application()
     application.remove(addon, dev=dev)

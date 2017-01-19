@@ -211,13 +211,20 @@ class Application(object):
         """Add a new dependency and install it."""
         dependencies = self.get_dependency_manager(dev=dev)
         other_dependencies = self.get_dependency_manager(dev=not dev)
+        existing = dependencies.get(addon)
         dependencies.add(addon)
         try:
+            # try adding
             self.build()
-            other_dependencies.remove(addon, warn=False)
         except:
+            # restore original settings
             dependencies.remove(addon)
-            raise
+            if existing:
+                dependencies.add(existing)
+            return
+
+        # remove version of this in other requirements file
+        other_dependencies.remove(addon, warn=False)
 
     def remove(self, addon, dev=False):
         """Remove a dependency and uninstall it."""

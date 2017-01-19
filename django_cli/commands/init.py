@@ -15,7 +15,7 @@ from .run import run
     default=style.default(Config.defaults['runtime'])
 )
 def init(name, runtime):
-    """Create a new Django app in the current directory."""
+    """Create a new Django app."""
     runtime = click.unstyle(runtime)
 
     stdout.write(
