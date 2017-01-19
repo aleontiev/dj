@@ -22,7 +22,7 @@ def mount_datas(root, dir):
     return result
 
 
-a = Analysis(['dj.py'],
+a = Analysis(['dj.exe.py'],
              pathex=[ROOT],
              binaries=None,
              datas=mount_datas(ROOT, BLUEPRINTS),
@@ -38,7 +38,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='dj',
+          name='dj.exe',
           debug=False,
           strip=False,
           upx=True,
@@ -49,4 +49,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='dj')
+               name='dj.exe')

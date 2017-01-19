@@ -18,10 +18,7 @@ clean:
 clean-all: clean
 	rm -rf $(INSTALL_DIR)
 
-distribute: clean-all
-	virtualenv $(INSTALL_DIR)
-	. $(INSTALL_DIR)/bin/activate; pip install -U pip
-	. $(INSTALL_DIR)/bin/activate; pip install -r requirements.txt
+distribute: clean-all install
 	. $(INSTALL_DIR)/bin/activate; pip install pyinstaller
-	. $(INSTALL_DIR)/bin/activate; pyinstaller dj.spec
-
+	. $(INSTALL_DIR)/bin/activate; pyinstaller dj.exe.spec
+	ln -sf $(CURDIR)/dist/dj.exe/dj.exe /usr/local/bin/dj

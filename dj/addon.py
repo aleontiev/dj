@@ -1,6 +1,5 @@
 import os
 from .blueprint import Blueprint
-from dj.utils.system import get_directories
 
 
 class Addon(object):
@@ -10,8 +9,15 @@ class Addon(object):
         self.directory = directory
         self.blueprints_directory = os.path.join(directory, 'blueprints')
 
-    def get_blueprints(self):
-        return Blueprint.get_blueprints(directory)
+    def blueprints(self):
+        if not hasattr(self, '_blueprints'):
+            self._blueprints = {
+                b.name: b for b in self.get_blueprints()
+            }
+        return self._blueprints
+
+    def get_blueprints(self, directory):
+        return Blueprint.get_blueprints(directory, addon=self)
 
     def __repr__(self):
         return '%s (%s)' % (self.name, self.directory)

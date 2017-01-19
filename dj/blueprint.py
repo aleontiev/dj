@@ -27,9 +27,9 @@ class Blueprint(object):
         return templates and context
 
     @classmethod
-    def get_blueprints(cls, directory):
+    def get_blueprints(cls, directory, addon=None):
         return [
-            Blueprint(d)
+            Blueprint(d, addon=addon)
             for d in
             get_directories(
                 directory,
@@ -38,8 +38,9 @@ class Blueprint(object):
             )
         ]
 
-    def __init__(self, directory):
+    def __init__(self, directory, addon=None):
         self.directory = directory
+        self.addon = addon
         self.templates_directory = os.path.join(directory, 'templates')
         self.name = os.path.basename(self.directory)
         self.context = os.path.join(directory, 'context.py')

@@ -6,6 +6,7 @@ from .addon import Addon
 from .generator import Generator
 from .dependency import DependencyManager, Dependency
 from .utils.imports import parse_setup
+from .blueprint import get_core_blueprints
 from .utils.system import (
     get_directories,
     get_last_touched,
@@ -67,6 +68,14 @@ class Application(object):
             self.name
         )
 
+    @property
+    def addons(self):
+        if not hasattr(self, '_addons'):
+            self._addons = {
+                a.name: a for a in self.get_addons()
+            }
+        return self._addons
+
     def get_addons(self):
         self.build()
 
@@ -80,9 +89,19 @@ class Application(object):
             addons.append(Addon(name, parent_directory))
         return addons
 
+    @property
+    def blueprints(self):
+        if not hasattr(self, '_blueprints'):
+            self._blueprints = {
+                ('%s.%s' % (b.addon.name, b.name) if b.addon else b.name): b
+                for b in self.get_blueprints()
+            }
+        return self._blueprints
+
     def get_blueprints(self):
-        blueprints = [a.get_blueprints() for a in self.get_addons()]
-        return [x for s in blueprints for x in s]
+        addons = self.addons.values()
+        blueprints = [a.blueprints.values() for a in addons]
+        return [x for s in blueprints for x in s] + get_core_blueprints()
 
     @property
     def requirements_last_modified(self):
