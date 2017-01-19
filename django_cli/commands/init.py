@@ -1,26 +1,34 @@
 import os
 import click
-from .generate import generate
 from django_cli.config import Config
-from .base import stdout, format_command
-from .run import run
+from django_cli.utils import style
 from .generate import generate
+from .base import stdout
+from .run import run
+
 
 @click.command()
 @click.argument('name')
 @click.option(
     '--runtime',
-    prompt=click.style('Python version', fg='yellow'),
-    default=Config.defaults['runtime']
+    prompt=style.prompt('Python version'),
+    default=style.default(Config.defaults['runtime'])
 )
 def init(name, runtime):
     """Create a new Django app in the current directory."""
-    stdout.write(format_command('Initializing', '%s on %s' % (name, runtime)))
+    runtime = click.unstyle(runtime)
+
+    stdout.write(
+        style.format_command(
+            'Initializing',
+            '%s %s %s' % (name, style.gray('@'), style.green(runtime))
+        )
+    )
 
     config = Config(os.getcwd())
     config.set('runtime', runtime)
     config.save()
 
     generate.main(['init', name], standalone_mode=False)
-    stdout.write(format_command('Migrating'))
+    stdout.write(style.format_command('Migrating'))
     run.main(['manage.py', 'migrate'])

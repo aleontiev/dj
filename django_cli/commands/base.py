@@ -1,10 +1,13 @@
 from django_cli.application import get_current_application
 from django_cli.blueprint import get_core_blueprints
 from django_cli.utils.system import StyleStdout
-from django_cli.utils.style import format_command
+from django_cli.utils import style
 import click
 
 stdout = StyleStdout()
+
+from .patch import patch_help_formatting
+patch_help_formatting()
 
 
 class BlueprintLoaderCommand(click.MultiCommand):
@@ -51,7 +54,7 @@ class BlueprintLoaderCommand(click.MultiCommand):
         args = context.protected_args + context.args
         name = args[0]
         stdout.write(
-            format_command( 
+            style.format_command(
                 'Generating',
                 '%s %s' % (
                     name,

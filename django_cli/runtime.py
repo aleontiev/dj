@@ -31,6 +31,7 @@ def get_runtime_root(version):
         'versions/%s' % version
     )
 
+
 def install_runtime(version):
     install_dependencies()
     versions = execute('pyenv versions', capture=True)
@@ -96,7 +97,13 @@ class Runtime(object):
 
     def execute(self, command, **kwargs):
         self._install()
-        return execute('%s/%s' % (self.script_directory, command), **kwargs)
+        env = kwargs.pop('env', {})
+        env = ' '.join(('%s="%s"' % (k, v) for k, v in env.items()))
+        env = '%s ' % env if env else ''
+        return execute(
+            '%s%s/%s' % (env, self.script_directory, command),
+            **kwargs
+        )
 
     def create_environment(self, directory):
         self._install()

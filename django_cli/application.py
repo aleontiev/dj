@@ -1,9 +1,10 @@
 from __future__ import absolute_import
 
 import os
+
 from .addon import Addon
 from .generator import Generator
-from .dependencies import DependencyManager
+from .dependency import DependencyManager, Dependency
 from .utils.imports import parse_setup
 from .utils.system import (
     get_directories,
@@ -11,7 +12,7 @@ from .utils.system import (
     get_files,
     touch,
 )
-from .utils.style import format_command, red, white
+from .utils import style
 from .config import Config
 from .runtime import Runtime
 from .utils.system import stdout as _stdout
@@ -39,31 +40,32 @@ class Application(object):
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.directory)
 
+    def _get_name(self):
+        name = None
+        setup_file = os.path.join(self.directory, self.setup_file)
+        if os.path.exists(setup_file):
+            try:
+                name = parse_setup(setup_file)['name']
+            except Exception as e:
+                import traceback
+                raise Exception(
+                    'Failed to parse app setup file: %s\n%s' %
+                    (str(e), traceback.format_exc())
+                )
+        return name
+
     @property
     def name(self):
         if not hasattr(self, '_name'):
-            name = None
-            setup_file = os.path.join(self.directory, self.setup_file)
-            if os.path.exists(setup_file):
-                try:
-                    name = parse_setup(setup_file)['name']
-                except Exception as e:
-                    import traceback
-                    raise Exception(
-                        'Failed to parse app setup file: %s\n%s' %
-                        (str(e), traceback.format_exc())
-                    )
-            self._name = name
+            self._name = self._get_name()
         return self._name
 
     @property
     def application_directory(self):
-        if not hasattr(self, '_application_directory'):
-            self._application_directory = os.path.join(
-                self.directory,
-                self.name
-            )
-        return self._application_directory
+        return os.path.join(
+            self.directory,
+            self.name
+        )
 
     def get_addons(self):
         self.build()
@@ -122,8 +124,34 @@ class Application(object):
         token = self._get_build_token(key)
         last_built = get_last_touched(token)
         if not last_built or last_built < last_modified:
-            self.stdout.write(format_command('Building', key))
-            self.execute(cmd, verbose=verbose)
+            self.stdout.write(style.format_command('Building', key))
+            result = self.execute(cmd, verbose=False, capture=True)
+            if 'pip' in cmd:
+                deps = []
+                for line in result.split('\n'):
+                    splits = line.split(' ')
+                    if line.startswith('Successfully installed'):
+                        dep = splits[2]
+                        dep = '=='.join(dep.rsplit('-', 1))
+                        dep = Dependency(dep)
+                        deps.append((dep, style.green('+ ')))
+                    elif line.startswith('Requirement already satisfied: '):
+                        dep = splits[3]
+                        dep = Dependency(dep)
+                        deps.append((dep, style.yellow('. ')))
+                    elif 'Uninstalling' in line:
+                        index = line.index('Uninstalling')
+                        dep = line[index:].split(' ')[1]
+                        dep = ''.join(dep[0:len(dep) - 1])
+                        dep = '=='.join(dep.rsplit('-', 1))
+                        dep = Dependency(dep)
+                        deps.append((dep, style.red('- ')))
+
+                for dep, prefix in sorted(
+                    deps,
+                    key=lambda x: str(x[0])
+                ):
+                    self.stdout.write(prefix + dep.to_stdout())
             touch(token)
 
     def build(self):
@@ -165,7 +193,11 @@ class Application(object):
     def generate(self, blueprint, context):
         """Generate a blueprint within this application."""
         generator = Generator(self, blueprint, context)
-        return generator.generate()
+        result = generator.generate()
+        if blueprint.name == 'init':
+            # try re-setting the name
+            self._name = self._get_name()
+        return result
 
     def get_dependency_manager(self, dev=False):
         return DependencyManager(
@@ -185,6 +217,7 @@ class Application(object):
             other_dependencies.remove(addon, warn=False)
         except:
             dependencies.remove(addon)
+            raise
 
     def remove(self, addon, dev=False):
         """Remove a dependency and uninstall it."""
@@ -197,13 +230,47 @@ class Application(object):
         if removed:
             self.build()
         else:
-            exception = '%s is not installed.' % white(str(addon))
-            self.stdout.write(red(exception))
+            exception = '%s is not installed.' % Dependency(addon).to_stdout()
+            self.stdout.write(style.red(exception))
 
-    def reset(self):
-        global current_application
-        current_application = Application()
-        return current_application
+    def info(self):
+        output = []
+        dev_requirements = self.get_dependency_manager(dev=True).dependencies
+        requirements = self.get_dependency_manager(dev=False).dependencies
+        name = self.name
+        app = self.to_stdout()
+        if name:
+            output.append(style.blue('Application:\n %s' % app))
+            if requirements:
+                output.append(style.blue('Requirements:'))
+                for _, dep in sorted(
+                        requirements.items(),
+                        key=lambda x: x[0].lower()):
+                    output.append(' ' + dep.to_stdout())
+            if dev_requirements:
+                output.append(style.blue('Dev requirements:'))
+                for _, dep in sorted(
+                        dev_requirements.items(),
+                        key=lambda x: x[0].lower()
+                ):
+                    output.append(' ' + dep.to_stdout())
+        else:
+            output.append(
+                style.yellow(
+                    '%s, try running %s.' % (
+                        app, style.white('django init')
+                    )
+                )
+            )
+
+        return '\n'.join(output)
+
+    def to_stdout(self):
+        return '%s %s %s' % (
+            style.white(self.name),
+            style.gray('@'),
+            style.green(self.runtime.version)
+        ) if self.name else style.yellow('No application')
 
 # singleton application instance
 current_application = None

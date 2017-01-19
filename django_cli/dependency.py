@@ -1,7 +1,9 @@
 from collections import OrderedDict
+import os
 import re
+from copy import copy
 from django_cli.utils.system import stdout
-from django_cli.utils.style import white, green, red, yellow
+from django_cli.utils.style import white, green, red, yellow, gray
 
 
 class Dependency(object):
@@ -32,11 +34,14 @@ class Dependency(object):
         return unicode(self).encode('utf-8')
 
     def __unicode__(self):
-        return '%s%s%s' % (
-            self.name,
-            self.operator,
-            self.version
-        )
+        return '%s%s%s' % (self.name, self.operator, self.version)
+
+    def to_stdout(self):
+        return '%s %s %s' % (
+            white(self.name),
+            gray(self.operator),
+            green(self.version)
+        ) if self.operator else white(self.name)
 
 
 class DependencyManager(object):
@@ -46,39 +51,46 @@ class DependencyManager(object):
 
     def add(self, value, warn=True):
         new = Dependency(value)
+        new_label = new.to_stdout()
         old = self.dependencies.get(new.name)
         self.dependencies[new.name] = new
-        new_label = white(str(new))
-        old_label = white(str(old))
         if old is None or str(old) != str(new):
+            old_label = old.to_stdout() if old else ''
+
             self._save()
-            if old:
+            if old_label:
                 stdout.write(red('- ') + old_label)
             stdout.write(green('+ ') + new_label)
             return True
         else:
             if warn:
-                stdout.write(yellow('%s already installed.' % new_label))
+                stdout.write(
+                    '%s %s' %
+                    (new_label, yellow('already installed.')))
             return False
 
     def remove(self, value, warn=True):
         new = Dependency(value)
         old = self.dependencies.get(new.name)
-        old_label = white(str(old))
+        new_label = new.to_stdout()
         if old is not None:
+            old_label = old.to_stdout()
             self.dependencies.pop(new.name)
             self._save()
             stdout.write(red('- ') + old_label)
             return True
         else:
             if warn:
-                stdout.write(yellow('%s not installed.' % old_label))
+                stdout.write('%s %s' % (new_label, yellow('not installed.')))
             return False
 
     @property
     def dependencies(self):
         if not hasattr(self, '_dependencies'):
-            self._dependencies = self._load()
+            if os.path.exists(self.source):
+                self._dependencies = self._load()
+            else:
+                self._dependencies = {}
         return self._dependencies
 
     def _load(self):
@@ -88,6 +100,7 @@ class DependencyManager(object):
                 if line:
                     d = Dependency(line)
                     dependencies[d.name] = d
+        self._clean = copy(dependencies)
         return dependencies
 
     def _save(self):
@@ -97,3 +110,4 @@ class DependencyManager(object):
                 if not dependency.endswith('\n'):
                     dependency = dependency + '\n'
                 f.write(dependency)
+        self._clean = copy(self.dependencies)

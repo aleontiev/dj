@@ -10,7 +10,7 @@ from django_cli.utils.jinja import (
     render_from_file
 )
 from django_cli.utils.system import stdout as _stdout
-from django_cli.utils.style import white
+from django_cli.utils import style
 
 
 class Generator(object):
@@ -50,7 +50,8 @@ class Generator(object):
                 full_file = os.path.join(root, file)
                 stat = os.stat(full_file)
                 content = render_from_file(full_file, context)
-                full_file = strip_extension(render_from_string(full_file, context))
+                full_file = strip_extension(
+                    render_from_string(full_file, context))
                 full_file = full_file.replace(templates_root, temp_dir, 1)
                 with open(full_file, 'w') as f:
                     f.write(content)
@@ -82,19 +83,19 @@ class Generator(object):
                     # match source
                     default = 'm'
                     action = click.prompt(
-                        click.style(
+                        style.prompt(
                             '%s already exists, '
                             '[r]eplace, [s]kip, or [m]erge?' % relative_target,
-                            fg='yellow'
                         ),
-                        default=default
-                    ).lower()
+                        default=style.default(default)
+                    )
+                    action = click.unstyle(action).lower()
                     if action not in {'r', 'm', 's'}:
                         action = default
 
                 if action == 's':
                     self.stdout.write(
-                        '? %s' % white(relative_target),
+                        '? %s' % style.white(relative_target),
                         fg='yellow'
                     )
                     continue
@@ -102,7 +103,11 @@ class Generator(object):
                     with open(source, 'r') as source_file:
                         with open(target, 'w') as target_file:
                             target_file.write(source_file.read())
-                    self.stdout.write('+ %s' % white(relative_target), fg='green')
+                    self.stdout.write(
+                        style.green(
+                            '+ %s' % style.white(relative_target)
+                        )
+                    )
                 if action == 'm':
                     with open(target, 'r') as target_file:
                         with open(source, 'r') as source_file:
@@ -113,4 +118,6 @@ class Generator(object):
                     with open(target, 'w') as target_file:
                         target_file.write(merged)
 
-                    self.stdout.write('> %s' % white(relative_target), fg='yellow')
+                    self.stdout.write(
+                        style.yellow('> %s' % style.white(relative_target))
+                    )
