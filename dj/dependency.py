@@ -2,8 +2,8 @@ from collections import OrderedDict
 import os
 import re
 from copy import copy
-from django_cli.utils.system import stdout
-from django_cli.utils.style import white, green, red, yellow, gray
+from dj.utils.system import stdout
+from dj.utils.style import white, green, red, yellow, gray
 
 
 class Dependency(object):

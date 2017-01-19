@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 import click
-from django_cli.dependency import Dependency
-from django_cli.application import get_current_application
-from django_cli.utils import style
+from dj.dependency import Dependency
+from dj.application import get_current_application
+from dj.utils import style
 from .base import stdout
 
 

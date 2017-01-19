@@ -1,4 +1,4 @@
-from django_cli.commands.django import command
+from dj.commands.dj import dj
 
 if __name__ == '__main__':
     try:

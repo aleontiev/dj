@@ -2,7 +2,7 @@
 import os
 
 ROOT = '/Users/ant/code/django-cli'
-BLUEPRINTS = 'django_cli/blueprints'
+BLUEPRINTS = 'dj/blueprints'
 HIDDEN_IMPORTS = ['setuptools', 'setuptools.msvc', 'inflection']
 
 block_cipher = None
@@ -22,7 +22,7 @@ def mount_datas(root, dir):
     return result
 
 
-a = Analysis(['django-cli.py'],
+a = Analysis(['dj.py'],
              pathex=[ROOT],
              binaries=None,
              datas=mount_datas(ROOT, BLUEPRINTS),
@@ -38,7 +38,7 @@ pyz = PYZ(a.pure, a.zipped_data,
 exe = EXE(pyz,
           a.scripts,
           exclude_binaries=True,
-          name='django-cli',
+          name='dj',
           debug=False,
           strip=False,
           upx=True,
@@ -49,4 +49,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=False,
                upx=True,
-               name='django-cli')
+               name='dj')

@@ -1,7 +1,7 @@
-import sys, os
+from __future__ import absolute_import
 import click
-from django_cli.commands.base import MultiCommand
 
+from .base import MultiCommand
 from .shell import shell
 from .run import run
 from .init import init
@@ -11,8 +11,10 @@ from .remove import remove
 from .migrate import migrate
 from .server import server
 from .info import info
+from .help import help
 
-class DjangoMultiCommand(MultiCommand):
+
+class _MultiCommand(MultiCommand):
     commands = {
         'migrate': migrate,
         'server': server,
@@ -22,11 +24,12 @@ class DjangoMultiCommand(MultiCommand):
         'generate': generate,
         'add': add,
         'remove': remove,
-        'info': info
+        'info': info,
+        'help': help
     }
 
 
-@click.command(cls=DjangoMultiCommand)
-def command(*args, **kwargs):
-    """The Django CLI."""
+@click.command(cls=_MultiCommand)
+def dj(*args, **kwargs):
+    """DJ, the Django CLI."""
     pass

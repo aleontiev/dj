@@ -1,6 +1,6 @@
 import os
 from .blueprint import Blueprint
-from django_cli.utils.system import get_directories
+from dj.utils.system import get_directories
 
 
 class Addon(object):

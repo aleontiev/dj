@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 from click.formatting import HelpFormatter
-from django_cli.utils import style
+from dj.utils import style
 
 
 def patch_help_formatting():

@@ -1,7 +1,9 @@
-from django_cli.application import get_current_application
-from django_cli.blueprint import get_core_blueprints
-from django_cli.utils.system import StyleStdout
-from django_cli.utils import style
+from __future__ import absolute_import
+
+from dj.application import get_current_application
+from dj.blueprint import get_core_blueprints
+from dj.utils.system import StyleStdout
+from dj.utils import style
 import click
 
 stdout = StyleStdout()

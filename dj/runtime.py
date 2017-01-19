@@ -1,6 +1,6 @@
 import os
-from django_cli.utils.system import execute, exists, stdout
-from django_cli.utils.style import format_command
+from dj.utils.system import execute, exists, stdout
+from dj.utils.style import format_command
 
 PYENV_ROOT = os.path.expanduser('~/.pyenv')
 
