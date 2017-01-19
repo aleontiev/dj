@@ -170,12 +170,12 @@ class Application(object):
             self._build(
                 'requirements',
                 self.requirements_last_modified,
-                'pip install -r %s' % self.requirements
+                'pip install -U -r %s' % self.requirements
             )
             self._build(
                 'dev requirements',
                 self.dev_requirements_last_modified,
-                'pip install -r %s' % self.dev_requirements
+                'pip install -U -r %s' % self.dev_requirements
             )
             self._build(
                 'application',

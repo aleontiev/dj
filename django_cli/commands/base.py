@@ -53,15 +53,16 @@ class BlueprintLoaderCommand(click.MultiCommand):
     def invoke(self, context):
         args = context.protected_args + context.args
         name = args[0]
-        stdout.write(
-            style.format_command(
-                'Generating',
-                '%s %s' % (
-                    name,
-                    args[1] if len(args) > 1 else ''
+        if '--help' not in args:
+            stdout.write(
+                style.format_command(
+                    'Generating',
+                    '%s %s' % (
+                        name,
+                        args[1] if len(args) > 1 else ''
+                    )
                 )
             )
-        )
 
         try:
             if name not in self.blueprints:
