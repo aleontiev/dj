@@ -9,11 +9,9 @@ class CLITestCase(TestCase):
     def test_create_new_app(self):
         with in_temporary_directory():
             application = get_current_application()
-            init = application.blueprints.get('init')
-            model = application.blueprints.get('model')
 
             print '* Generating application'
-            application.generate(init, {
+            application.generate('init', {
                 'app': 'dummy',
                 'description': 'x',
                 'author': 'x',
@@ -49,6 +47,10 @@ class CLITestCase(TestCase):
 
             print '* Testing model generation'
             dj.main(['generate', 'model', 'foo'], standalone_mode=False)
+            application.generate('model', {
+                'name': 'foo',
+                'class_name': 'Foo'
+            })
 
             print '* Testing new migration flow'
             dj.main([
@@ -73,3 +75,16 @@ class CLITestCase(TestCase):
                 '--quiet'
             ], standalone_mode=False)
             self.assertFalse('Applying dummy.0001_initial' in result)
+
+            application.generate('command', {
+                'name': 'foobar',
+                'help': 'Foo'
+            })
+
+            result = dj.main([
+                'run',
+                'manage.py',
+                'foobar',
+                '--quiet'
+            ], standalone_mode=False)
+            self.assertTrue('foobar called' in result)

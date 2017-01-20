@@ -4,6 +4,7 @@ import os
 
 from .addon import Addon
 from .generator import Generator
+from .blueprint import Blueprint
 from .dependency import DependencyManager, Dependency
 from .utils.imports import parse_setup
 from .blueprint import get_core_blueprints
@@ -211,6 +212,12 @@ class Application(object):
 
     def generate(self, blueprint, context):
         """Generate a blueprint within this application."""
+        if not isinstance(blueprint, Blueprint):
+            bp = self.blueprints.get(blueprint)
+            if not bp:
+                raise ValueError('%s is not a valid blueprint' % blueprint)
+            blueprint = bp
+
         generator = Generator(self, blueprint, context)
         result = generator.generate()
         if blueprint.name == 'init':
