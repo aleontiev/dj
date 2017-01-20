@@ -33,3 +33,8 @@ class _MultiCommand(MultiCommand):
 def dj(*args, **kwargs):
     """DJ, the Django CLI."""
     pass
+
+
+def execute(command):
+    command = command.split(' ')
+    return dj.main(command, standalone_mode=False)

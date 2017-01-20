@@ -21,4 +21,6 @@ def info():
 
     """
     application = get_current_application()
-    stdout.write(application.info())
+    info = application.info()
+    stdout.write(info)
+    return info
