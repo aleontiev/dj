@@ -13,17 +13,14 @@ class CLITestCase(TestCase):
             model = application.blueprints.get('model')
 
             print '* Generating application'
-            application.generate(
-                init, {
-                    'description': 'x',
-                    'author': 'x',
-                    'email': 'x',
-                    'version': '0.0.1',
-                    'django_version': '1.10',
-                    'app': 'dummy'
-                }
-            )
-
+            application.generate(init, {
+                'app': 'dummy',
+                'description': 'x',
+                'author': 'x',
+                'email': 'x',
+                'version': '0.0.1',
+                'django_version': '1.10'
+            })
             print '* Testing build/run'
             result = dj.main([
                 'run',
@@ -51,13 +48,7 @@ class CLITestCase(TestCase):
             self.assertTrue('No migrations to apply' in result)
 
             print '* Testing model generation'
-            application.generate(
-                model, {
-                    'name': 'foo',
-                    'class_name': 'Foo',
-                    'app': 'dummy'
-                }
-            )
+            dj.main(['generate', 'model', 'foo'], standalone_mode=False)
 
             print '* Testing new migration flow'
             dj.main([
