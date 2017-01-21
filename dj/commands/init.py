@@ -1,7 +1,8 @@
+from __future__ import absolute_import
 import os
 import click
-from django_cli.config import Config
-from django_cli.utils import style
+from dj.config import Config
+from dj.utils import style
 from .generate import generate
 from .base import stdout
 from .run import run

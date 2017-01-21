@@ -1,1 +1,1 @@
-recursive-include django_cli/blueprints/*/templates *
+recursive-include dj/blueprints/*/templates *

@@ -3,14 +3,14 @@ import tempfile
 import shutil
 import os
 import click
-from django_cli.utils.codegen import merge
-from django_cli.utils.jinja import (
+from dj.utils.codegen import merge
+from dj.utils.jinja import (
     strip_extension,
     render_from_string,
     render_from_file
 )
-from django_cli.utils.system import stdout as _stdout
-from django_cli.utils import style
+from dj.utils.system import stdout as _stdout
+from dj.utils import style
 
 
 class Generator(object):

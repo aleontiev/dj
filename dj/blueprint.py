@@ -1,7 +1,7 @@
 import os
 import sys
-from django_cli.utils.system import get_directories, get_files
-from django_cli.utils.imports import load_module
+from dj.utils.system import get_directories, get_files
+from dj.utils.imports import load_module
 
 
 class Blueprint(object):
@@ -27,9 +27,9 @@ class Blueprint(object):
         return templates and context
 
     @classmethod
-    def get_blueprints(cls, directory):
+    def get_blueprints(cls, directory, addon=None):
         return [
-            Blueprint(d)
+            Blueprint(d, addon=addon)
             for d in
             get_directories(
                 directory,
@@ -38,8 +38,9 @@ class Blueprint(object):
             )
         ]
 
-    def __init__(self, directory):
+    def __init__(self, directory, addon=None):
         self.directory = directory
+        self.addon = addon
         self.templates_directory = os.path.join(directory, 'templates')
         self.name = os.path.basename(self.directory)
         self.context = os.path.join(directory, 'context.py')
@@ -52,5 +53,18 @@ class Blueprint(object):
 
 
 def get_core_blueprints():
-    path = os.path.join(os.path.dirname(sys.executable), 'django_cli/blueprints')
-    return Blueprint.get_blueprints(path)
+    if getattr(sys, 'frozen', False):
+        # get blueprints relative to sys.executable
+        path = os.path.join(
+            os.path.dirname(
+                sys.executable),
+            'dj/blueprints')
+    else:
+        # get blueprints folder relative to this file
+        path = os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                'blueprints'))
+
+    blueprints = Blueprint.get_blueprints(path)
+    return blueprints

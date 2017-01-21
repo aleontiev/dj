@@ -11,7 +11,7 @@ class Config(object):
         'devRequirements': 'requirements.txt.dev',
         'runtime': '2.7.9',
     }
-    config_directory = '.django-cli'
+    config_directory = '.dj'
     filename = 'config.yaml'
     build_directory = 'build'
 

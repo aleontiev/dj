@@ -3,10 +3,10 @@ from setuptools import (
     setup,
 )
 
-APP_NAME = "django_cli"
+APP_NAME = "dj"
 AUTHOR = "Anthony Leontiev"
 AUTHOR_EMAIL = "alonetiev@gmail.com"
-DESCRIPTION = "Django CLI"
+DESCRIPTION = "DJ, the Django CLI"
 REPO_NAME = "django-cli"
 ORG_NAME = "aleontiev"
 VERSION = "0.0.1"
@@ -25,10 +25,9 @@ setup(
     install_requires=open('install_requires.txt').readlines(),
     entry_points={
         'console_scripts': [
-            'django = django_cli.commands.django:command'
+            'dj = dj.commands.dj:dj'
         ]
     },
-    test_suite='runtests.runtests',
     url='http://github.com/%s/%s' % (ORG_NAME, REPO_NAME),
     version=VERSION,
 )

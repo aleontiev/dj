@@ -1,6 +1,7 @@
+from __future__ import absolute_import
 import click
-from django_cli.application import get_current_application
-from django_cli.utils.system import stdout
+from dj.application import get_current_application
+from dj.utils.system import stdout
 
 
 @click.command()
@@ -20,4 +21,6 @@ def info():
 
     """
     application = get_current_application()
-    stdout.write(application.info())
+    info = application.info()
+    stdout.write(info)
+    return info
