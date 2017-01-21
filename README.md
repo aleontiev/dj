@@ -4,9 +4,9 @@ Django CLI
 Django CLI is a command-line tool that automates the repetitive workflows necessary
 to manage Django application code:
 
-* Setting up a new project 
-* Adding dependencies to the project
-* Running the project in an isolated environment
+* Setting up a new project
+* Managing project dependencies
+* Building and running the project
 * Generating code stubs
 
 # Why Django CLI?
@@ -20,6 +20,54 @@ for newcomers.
 Django CLI, insipred by Ember CLI, attempts to fill these gaps by providing a simple, comprehensive, and extendable
 interface for the Django development lifecycle. Django CLI is built in Python and provides familiar integration
 points for Python developers.
+
+# Principles
+
+Apps should follow these principles:
+
+1. Consistency
+a. Apps should contain a `setup.py` setup file.
+b. Apps should contain a `manage.py` script defined in `setup.py`.
+c. Apps should contain a `requirements.txt` dependency list file.
+d. Apps should contain a `requirements.txt.dev` dependency list file.
+e. Apps should contain a single app package with the same name as the app.
+
+    The app name (as it appears in package management) should be the same as the package name provided by the app.
+
+f. Apps' app package should contain `settings`, `models`, `wsgi`, `urls` 
+    
+    These packages are necessary for Django applications.
+
+g. Apps should use a single code style.
+
+    Style should be enforced by a linter (e.g. `flake8`).
+
+h. Apps should test each package in a corresponding subpackage of `tests.unit`.
+    
+    The package `foo.models.bar` should be tested by `tests.unit.foo.models.test_bar`.
+
+2. Minimalism
+a. Apps should only export one package.
+    
+    When dependencies are installed in the pip/setuptools model,
+    the top-level packages of a dependency are added to the application's environment.
+
+    The free mapping between dependency and packages can be confusing, as dependencies and packages can be
+    similar but different (e.g. my-dep and my_dep), and dependencies can provide conflicting packages (e.g. my-dep providing foo and other-dep also providing foo).
+    
+    To mitigate this issue, apps should provide a single package that has the same name as the application name.
+
+b. App code should be concise. 
+
+    Avoid writing code that replaces existing boilerplate.
+    Re-use components.
+
+c. App structure should be concise.
+
+    Avoid creating folder structure 
+
+3. Isolation
+a. App modules should make dependencies clear.
 
 # Getting Started
 
