@@ -129,65 +129,77 @@ c. App structure should be concise.
 
 ## Installation
 
-To install Django CLI, simply run [the appropriate installer](./INSTALLERS.md) for your operating system.
-Django CLI distributes with PyInstaller and runs within an isolated Python environment.
+To install `dj`, simply run [the appropriate installer](./INSTALLERS.md) for your operating system.
+`dj` distributes with PyInstaller and runs within an isolated Python environment.
 
 ## Commands
 
 Run `dj --help` to see a list of supported commands.
 Run `dj SUBCOMMAND --help` for help on any specific subcommand:
 
-### django init NAME
+### dj info
+
+Display information about the current app.
+
+### dj init NAME [--runtime=2.7.9]
 
 Sets up a shell Django project in the current directory.
 This command will prompt for all optional arguments, unless passed in.
 
-### django adds ADDON[@VERSION]
+### dj add ADDON
 
-Adds a Django CLI addon or PyPi package into the current project.
+Adds a PyPi package as a dependency of the current project.
 
 If `--dev` is passed, the addon will only be required for testing and local development.
-Otherwise, the addon will be treated as a core package dependency.
+Otherwise, the addon will be installed in production.
 
-If this is a Django CLI, the addon's initializer will be generated.
+If the `addon` has an `init` blueprint, the `init` blueprint will be generated.
 
-### django generate [ADDON.]BLUEPRINT [...ARGS]
+### dj remove ADDON
 
-Generates a module given a blueprint. The blueprint can be prefixed by the name
+Removes an installed addon, the inverse of `dj add`.
+
+### dj generate [ADDON.]BLUEPRINT [...ARGS]
+
+Generates a set of modules given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
 
 The following core blueprints are supported:
 
+* init
+    Starting blueprint, creates the project from scratch.
 * model NAME
+    Create a model and associated test.
 * command NAME
+    Create a command and associated test.
 
-### django run COMMAND [...ARGS]
+### dj run COMMAND [...ARGS]
 
 Run any Django command in development mode.
 
 A virtual environment will be used to build and run the app.
-The current system version of Python will be used.
+The runtime version specified during initialization is used.
 
 # Developing Addons
 
-It is easy to turn an existing Python or Django library into a Django-CLI addon.
-The only distinction is a `blueprints` module within the application package.
+It is easy to turn an existing Python or Django library into a `dj` addon.
+The only requirement is that an addon should have a `blueprints` module within the application package.
 This blueprints module should provide all of the addon's blueprints, including an optional
 `init` blueprint that is run at installation time.
 
 ## Blueprints
 
 Blueprints allows addons to establish structural conventions for
-their implementions through the code generation features built into Django-CLI.
+their implementions through the code generation features built into `dj`.
 
-A blueprint is a Python package with a `generate.py` module that describes the input
+A blueprint is a Python package with a `context.py` module that describes the input to the generator function
 and a `templates` folder that describes the output.
 
-### generate.py
+### context.py
 
-A blueprint's `generate` package should export a single method called `get_context` that serves as a `click`
+A blueprint's `context` package should export a single method called `get_context` that serves as a `click`
 entrypoint for the blueprint. This entrypoint should describe the required and optional parameters using
-`click` decorators and should return the context that will be called by Django CLI's generation methods.
+`click` decorators and should return the context that will be called by `dj`'s generation methods.
 
 Example:
 
@@ -207,18 +219,18 @@ def get_context(name, class_name):
 ### templates
 
 A blueprint's templates folder contains `Jinja` template files that are rendered and merged into an existing
-application when the blueprint is called.
+application when the blueprint is called. All Jinja files should be suffixed with `.j2`.
 
 #### rendering
 
-Blueprints are rendered by applying the context passed to Django CLI's `generate` method to each of the files
+Blueprints are rendered by applying the context passed to `dj`s `generate` method to each of the files
 in the `templates` directory. In addition, file names containing double-underscore delimited variables are replaced by values
-from the context. The "app" variable is automatically populated by Django CLI with the name of the current application.
+from the context. The "app" variable is automatically populated by `dj` with the name of the current application.
 
 For example, the model blueprint:
 ```
 /
-    __app__/
+    {{app}}/
         models/
             __init__.py
                 # cli: merge
@@ -273,7 +285,7 @@ For example, suppose that app "foo" has the following structure:
                 ...
 ```
 
-After merging in the blueprint for model "bar" from the above example, the structure would be:
+After merging in the blueprint for model "bar" from the above example, the structure would look like:
 
 ```
 /
@@ -295,20 +307,24 @@ After merging in the blueprint for model "bar" from the above example, the struc
 
 # Implementation Details
 
-Django CLI is written in Python and depends on:
+`dj` is written in Python and depends on the following libraries.
 
-## Command Parsing
+## Code merging
 
-Django CLI uses `click` to handle CLI input. 
+`dj` uses `redbaron` to merge Python files (FST-merge).
+
+## CLI Parsing
+
+`dj` uses `click` to handle CLI input. 
 
 ## Rendering
 
-Django CLI uses `Jinja2` to render templates.
+`dj` uses `Jinja2` to render templates.
 
-## Registry & Virtual environment
+## Virtual environment
 
-In order to support blueprint generation, Django CLI builds a registry of CLI-compatible addons that contain blueprints.
-To do this, it has to install all of the current application's dependencies. This is done in a virtual environment created using Python 3's venv API.
+`dj` uses `virtualenv` to build the app in an isolated environment.
 
-Once the application and its dependencies are installed, Django CLI looks through each of the `INSTALLED_APPS` packages for
-a `blueprints` subdirectory that contains subpackages matching a blueprint's signature: `generate.py` and `templates`.
+## Python runtime
+
+`dj` uses `pyenv` to manage multiple runtimes / versions of Python. `pyenv` will be installed if not already present.
