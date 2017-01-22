@@ -33,7 +33,9 @@ def prompt(txt):
     '--django-version', prompt=prompt('Django version'),
     default=default('1.10'))
 def get_context(name, description, author, email, version, django_version):
+    name = click.unstyle(name)
     description = click.unstyle(description)
+    email = click.unstyle(email)
     author = click.unstyle(author)
     version = click.unstyle(version)
     django_version = click.unstyle(django_version)
