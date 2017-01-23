@@ -10,6 +10,7 @@ from .add import add
 from .remove import remove
 from .migrate import migrate
 from .server import server
+from .test import test
 from .info import info
 from .help import help
 
@@ -19,6 +20,7 @@ class _MultiCommand(MultiCommand):
         'migrate': migrate,
         'server': server,
         'shell': shell,
+        'test': test,
         'run': run,
         'init': init,
         'generate': generate,

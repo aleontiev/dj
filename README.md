@@ -1,15 +1,12 @@
 dj: The Django CLI
 ==================
 
-`dj` is a command-line tool that automates the repetitive workflows necessary
-to manage Django application code:
+`dj` is a command-line tool that automates Django application developer workflows:
 
 * Setting up a new project
 * Managing project dependencies
 * Building and running the project
 * Generating new code stubs
-
-# Why `dj`?
 
 While there are existing tools that address some of these workflows at the language and framework level
 (django-admin, cookiecutter, virtualenv, make),
