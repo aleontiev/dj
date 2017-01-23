@@ -12,6 +12,6 @@ from .run import run
 def test(args):
     """Run tests."""
     args = [
-        'manage.py', 'test', '--settings=tests.settings'
+        'pytest', 'tests', '--ds=tests.settings'
     ] + list(args)
     run.main(args)

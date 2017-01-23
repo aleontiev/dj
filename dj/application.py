@@ -118,11 +118,8 @@ class Application(object):
 
     @property
     def app_last_modified(self):
-        # timestamp of last code change
-        app_files = list(get_files(
-            self.application_directory,
-            lambda x: x.endswith('.py'),
-        )) + [os.path.join(self.directory, self.setup_file)]
+        # timestamp of last setup.py change
+        app_files = [self.setup_file]
         return max([
             get_last_touched(file) for file in app_files
         ])
@@ -200,7 +197,7 @@ class Application(object):
             self._build(
                 'application',
                 self.app_last_modified,
-                'python setup.py install'
+                'python setup.py develop'
             )
 
     def execute(self, command, **kwargs):
