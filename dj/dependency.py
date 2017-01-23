@@ -7,7 +7,7 @@ from dj.utils.style import white, green, red, yellow, gray
 
 
 class Dependency(object):
-    parse_regex = re.compile(r'^([A-Za-z][-A-Za-z_.]+)([=><]+)([0-9.]+)$')
+    parse_regex = re.compile(r'^([A-Za-z][-A-Za-z0-9_.]+)([=><]+)([0-9.]+)$')
 
     def __init__(self, value):
         value = value.strip('\n')
