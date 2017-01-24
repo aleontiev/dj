@@ -59,7 +59,7 @@ Run `dj SUBCOMMAND --help` for help on any specific subcommand.
 
 ### add
 
-Add a dependency to the project. The dependency must be given in pip depdendency notation.
+Add a dependency to the project. The dependency must be provided in `pip` dependency notation.
 
 If `--dev` is passed, the addon will only be required for testing and local development.
 Otherwise, the addon will be installed in production.
@@ -69,7 +69,7 @@ If the `addon` has an `init` blueprint, the `init` blueprint will be generated.
 For example:
 
     dj add dynamic-rest==1.5.0
-    dj add dynamic-rest
+    dj add dynamic-rest --dev
     dj add git+https://github.com/AltSchool/dynamic-rest@master#egg=dynamic-rest
 
 ### generate
@@ -79,9 +79,17 @@ of an addon and may take several arguments.
 
 The following core blueprints are supported:
 
-1. init: Project blueprint, creates the project/application from scratch.
-2. model: custom data model and associated test
-3. command: custom server command and associated test
+    init: 
+    
+        The app blueprint, create the application from scratch.
+
+    model:
+
+        Create a custom data model and associated test.
+
+    command:
+        
+        Create a custom server command and associated test.
 
 ### info
 
