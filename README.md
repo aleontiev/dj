@@ -72,24 +72,24 @@ For example:
     dj add dynamic-rest --dev
     dj add git+https://github.com/AltSchool/dynamic-rest@master#egg=dynamic-rest
 
-### generate
+### Generate
 
 Generates a set of modules given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
 
 The following core blueprints are supported:
 
-    init: 
+#### init
     
-        The app blueprint, create the application from scratch.
+The app blueprint, create the application from scratch.
 
-    model:
+#### model
 
-        Create a custom data model and associated test.
+Create a custom data model and associated test.
 
-    command:
+#### command
         
-        Create a custom server command and associated test.
+Create a custom server command and associated test.
 
 ### info
 
