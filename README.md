@@ -38,11 +38,14 @@ dj: the Django CLI
 * Building and running the project
 * Generating new code stubs
 
-The reality of the Python distribution ecosystem is an uncertain and distributed experience, especially for newcomers. There are too many options, they don't integrate well, and they don't provide complete functionality. 
+The Python distribution ecosystem is an uncertain and segmented experience, especially for newcomers. There are too many options, they don't integrate well, and they don't provide complete functionality.
 
-`dj`, insipred by ember-cli, attempts to fill the gaps by providing a simple, comprehensive, and extendable
-interface for the Django development lifecycle. `dj` is built in Python and provides familiar integration
-points for Python developers.
+For example, the typical development environment might use `pyenv` to control the Python runtime version, `virtualenv` to isolate the project's dependencies, `pip` and `setuptools` to specify dependencies, `django-admin` to initialize a project, `manage.py` within the virtual environment to run commands, and a `Makefile` to wrap all of these tools.
+
+`dj`, insipred by ember-cli, attempts to instead provide a simple, comprehensive, and extendable
+interface for the Django development lifecycle.
+
+With `dj`, you can create and start a Django app in seconds, and modify it with your first migration in minutes.
 
 ## Installation
 
