@@ -45,6 +45,13 @@ class Blueprint(object):
         self.name = os.path.basename(self.directory)
         self.context = os.path.join(directory, 'context.py')
 
+    @property
+    def full_name(self):
+        return (
+            '%s.%s' % (self.name, self.addon.name)
+            if self.addon else self.name
+        )
+
     def load_context(self):
         return load_module(self.context).get_context
 

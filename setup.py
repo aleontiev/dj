@@ -3,16 +3,6 @@ from setuptools import (
     setup,
 )
 
-APP_NAME = "dj"
-AUTHOR = "Anthony Leontiev"
-AUTHOR_EMAIL = "alonetiev@gmail.com"
-DESCRIPTION = "DJ, the Django CLI"
-REPO_NAME = "django-cli"
-ORG_NAME = "aleontiev"
-VERSION = "0.0.1"
-
-EXCLUDE_FROM_PACKAGES = []
-
 def get_dependencies(file):
     import re
 
@@ -38,7 +28,7 @@ def get_dependencies(file):
                 # check for version
                 if separator:
                     egg_name = egg[:separator]
-                    egg_version = egg[separator+1:]
+                    egg_version = egg[separator + 1:]
                     if version.match(egg_version):
                         # egg=name-version
                         identifier = '%s==%s' % (egg_name, egg_version)
@@ -58,23 +48,25 @@ def get_dependencies(file):
     return install_requires, dependency_links
 
 dependencies = get_dependencies('requirements.txt')
+install_requires = dependencies[0].values()
+dependency_links = dependencies[1].values()
 
 setup(
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
-    description=DESCRIPTION,
+    author='Anthony Leontiev',
+    author_email='alonetiev@gmail.com',
+    description='dj, the Django CLI',
     include_package_data=True,
     long_description=open('README.md').read(),
-    name=APP_NAME,
-    packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
+    name='dj',
+    packages=find_packages(),
     scripts=[],
-    install_requires=dependencies[0].values(),
-    dependency_links=dependencies[1].values(),
+    install_requires=install_requires,
+    dependency_links=dependency_links,
     entry_points={
         'console_scripts': [
             'dj = dj.commands.dj:dj'
         ]
     },
-    url='http://github.com/%s/%s' % (ORG_NAME, REPO_NAME),
-    version=VERSION,
+    url='http://github.com/aleontiev/dj',
+    version='0.0.1'
 )

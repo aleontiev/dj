@@ -6,23 +6,20 @@ from .addon import Addon
 from .generator import Generator
 from .blueprint import Blueprint
 from .dependency import DependencyManager, Dependency
-from .utils.imports import parse_setup
 from .blueprint import get_core_blueprints
 from .utils.system import (
     get_directories,
     get_last_touched,
-    get_files,
     touch,
 )
 from .utils import style
 from .config import Config
 from .runtime import Runtime
 from .utils.system import stdout as _stdout
+from redbaron import RedBaron
 
 
 class Application(object):
-
-    VIRTUAL_ENV_NAME = 'build'
 
     def __init__(
         self,
@@ -42,12 +39,37 @@ class Application(object):
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.directory)
 
+    @staticmethod
+    def parse_application_name(setup_filename):
+        """Parse a setup.py file for the name.
+
+        Returns:
+            name, or None
+        """
+        with open(setup_filename, 'rt') as setup_file:
+            fst = RedBaron(setup_file.read())
+            for node in fst:
+                if (
+                    node.type == 'atomtrailers' and
+                    str(node.name) == 'setup'
+                ):
+                    for call in node.call:
+                        if str(call.name) == 'name':
+                            value = call.value
+                            if hasattr(value, 'to_python'):
+                                value = value.to_python()
+                            name = str(value)
+                            break
+                    if name:
+                        break
+        return name
+
     def _get_name(self):
         name = None
         setup_file = os.path.join(self.directory, self.setup_file)
         if os.path.exists(setup_file):
             try:
-                name = parse_setup(setup_file)['name']
+                name = Application.parse_application_name(setup_file)
             except Exception as e:
                 import traceback
                 raise Exception(
@@ -117,12 +139,9 @@ class Application(object):
         )
 
     @property
-    def app_last_modified(self):
+    def setup_last_modified(self):
         # timestamp of last setup.py change
-        app_files = [self.setup_file]
-        return max([
-            get_last_touched(file) for file in app_files
-        ])
+        return get_last_touched(self.setup_file)
 
     @property
     def environment(self):
@@ -196,11 +215,12 @@ class Application(object):
             )
             self._build(
                 'application',
-                self.app_last_modified,
+                self.setup_last_modified,
                 'python setup.py develop'
             )
 
     def execute(self, command, **kwargs):
+        self.stdout.write(style.format_command('Running', command))
         return self.environment.execute(command, **kwargs)
 
     def run(self, command, **kwargs):
@@ -215,6 +235,12 @@ class Application(object):
                 raise ValueError('%s is not a valid blueprint' % blueprint)
             blueprint = bp
 
+        self.stdout.write(
+            style.format_command(
+                'Generating',
+                blueprint.full_name
+            )
+        )
         generator = Generator(self, blueprint, context)
         result = generator.generate()
         if blueprint.name == 'init':
@@ -235,6 +261,7 @@ class Application(object):
         dependencies = self.get_dependency_manager(dev=dev)
         other_dependencies = self.get_dependency_manager(dev=not dev)
         existing = dependencies.get(addon)
+        self.stdout.write(style.format_command('Adding', addon))
         dependencies.add(addon)
         try:
             # try adding
@@ -253,6 +280,7 @@ class Application(object):
         """Remove a dependency and uninstall it."""
         dependencies = self.get_dependency_manager(dev=dev)
         other_dependencies = self.get_dependency_manager(dev=not dev)
+        self.stdout.write(style.format_command('Removing', addon))
         removed = dependencies.remove(addon, warn=False)
         if not removed:
             removed = other_dependencies.remove(addon, warn=False)

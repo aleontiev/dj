@@ -3,14 +3,6 @@ from setuptools import (
     setup,
 )
 
-APP = "{{ app }}"
-AUTHOR = "{{ author }}"
-AUTHOR_EMAIL = "{{ email }}"
-DESCRIPTION = "{{ description }}"
-VERSION = "{{ version }}"
-
-EXCLUDE_FROM_PACKAGES = []
-
 
 def get_dependencies(file):
     import re
@@ -57,17 +49,19 @@ def get_dependencies(file):
     return install_requires, dependency_links
 
 dependencies = get_dependencies('requirements.txt')
+install_requires = dependencies[0].values()
+dependency_links = dependencies[1].values()
 
 setup(
-    author=AUTHOR,
-    author_email=AUTHOR_EMAIL,
-    description=DESCRIPTION,
+    author='{{author}}',
+    author_email='{{email}}',
+    description='{{description}}',
     include_package_data=True,
     long_description=open('README.md').read(),
-    name=APP,
-    packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
+    name='{{app}}',
+    packages=find_packages(),
     scripts=['manage.py'],
-    install_requires=dependencies[0].values(),
-    dependency_links=dependencies[1].values(),
-    version=VERSION,
+    install_requires=install_requires,
+    dependency_links=dependency_links,
+    version='{{version}}'
 )

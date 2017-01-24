@@ -31,17 +31,6 @@ class GenerateCommand(click.MultiCommand):
             raise click.ClickException('Could not locate blueprint')
 
         command = self.get_command(context, name)
-        if '--help' not in args:
-            stdout.write(
-                style.format_command(
-                    'Generating',
-                    '%s %s' % (
-                        name,
-                        args[1] if len(args) > 1 else ''
-                    )
-                )
-            )
-
         args = args[1:]
         ctx = command.main(args, standalone_mode=False)
 

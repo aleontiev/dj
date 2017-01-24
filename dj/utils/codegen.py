@@ -97,3 +97,4 @@ def merge(source, delta):
         return source.dumps()
 
     raise Exception("Can't merge %s into %s" % (delta, source))
+
