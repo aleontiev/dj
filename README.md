@@ -72,7 +72,7 @@ For example:
     dj add dynamic-rest --dev
     dj add git+https://github.com/AltSchool/dynamic-rest@master#egg=dynamic-rest
 
-### Generate
+### generate
 
 Generates a set of modules given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
