@@ -91,7 +91,7 @@ Most are recommended, some are required.
 
 ### Consistency
 
-Apps should follow a predictable file and metadata structure.
+Apps should follow a predictable style and structure.
 
 ####  An app MUST have a name.
 
@@ -176,17 +176,16 @@ These files are generated automatically by `dj init`.
     
     The package `foo.models.bar` should be tested by `tests.unit.foo.models.test_bar`.
 
-### Minimalism
+### Clarity
 
-Apps should aim to reduce code and complexity wherever possible.
+App code and structure should be easy to understand.
 
 #### An app should only export one package.
     
 When dependencies are installed in the pip/setuptools model,
 the top-level packages of a dependency are added to the application's environment.
 
-The free mapping between dependency and packages can be confusing, as dependencies and packages can be
-spelled slightly differently, and dependencies can provide conflicting packages.
+The flexible mapping between dependency and packages can lead to ambiguity, as dependencies can provide conflicting packages.
     
 To mitigate this issue, apps should provide a single package that has the same name as the application name.
 
@@ -232,10 +231,10 @@ For example:
 
 ## Blueprints
 
-Blueprints allows addons to establish structural conventions for
-their implementions through the code generation features built into `dj`.
+Blueprints allows apps that can function as addons to establish structural conventions for
+their consumer apps through the code generation features built into `dj`.
 
-A blueprint is a Python package with a `context.py` module that describes the input to the generator function
+A *blueprint* is a Python package with a `context.py` module that describes the input to the generator function
 and a `templates` folder that describes the output.
 
 ### Context
@@ -244,7 +243,7 @@ A blueprint's `context` package should export a single method called `get_contex
 entrypoint for the blueprint. This entrypoint should describe the required and optional parameters using
 `click` decorators and should return the context that will be called by `dj`'s generation methods.
 
-Example:
+For example:
 
 ```
 import click
@@ -283,7 +282,7 @@ For example, the model blueprint:
                     pass
 ```
 
-Might be rendered as follows for app "foo" and name "bar":
+... would be rendered as follows for app "foo" and name "bar":
 
 ```
 /
@@ -304,10 +303,7 @@ The following rules are used for each folder:
 
 * Folders and files in the blueprint that do not already exist within an application are created
 * Files within the blueprint that do exist and match exactly are ignored
-* For files within the blueprint that do not match, they are merged using FST analysis:
-    * Import statements that match exactly are only rendered once
-    * Assignment statements that match exactly are only rendered once
-    * Assignment statements to the same variable with different list/set/dict-type values have their values merged
+* Files within the blueprint that do not match are merged using FST analysis (this is done with the awesome [redbaron](https://github.com/PyCQA/redbaron) package.
 
 For example, suppose that app "foo" has the following code and structure:
 
@@ -344,26 +340,26 @@ After merging in the blueprint for model "bar" from the above example, the code 
                 ...
 ```
 
-# Dependencies / thanks
+# Dependencies
 
 `dj` is written in Python and depends on the following libraries:
 
 ## redbaron
 
-`dj` uses `redbaron` to merge Python files (FST-merge).
+`redbaron` is used to merge Python files (FST-merge). This is applied in the `generate` command. `redbaron` comes packaged with `dj`.
 
 ## click
 
-`dj` uses `click` to handle CLI input. 
+`click` provides the CLI framework. All `dj` subcommands are implemented as `click` commands. `click` comes packaged with `dj`.
 
 ## jinja2
 
-`dj` uses `Jinja2` to render templates.
+`Jinja2` is used to render templates by the `generate` command. It comes packaged with `dj`.
 
 ## virtualenv
 
-`dj` uses `virtualenv` to build the app in an isolated environment.
+`virtualenv` is used to build the app in an isolated environment. It is used by `dj run` and other executors. The CLI version is used to support multiple runtimes, and it will be installed if not already present.
 
 ## pyenv
 
-`dj` uses `pyenv` to manage multiple runtimes / versions of Python. `pyenv` will be installed if not already present.
+`pyenv` is used to manage multiple runtimes / versions of Python. `pyenv` will be installed if not already present.
