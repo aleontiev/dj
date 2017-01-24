@@ -1,30 +1,21 @@
-   * [dj: The Django CLI](#dj-the-django-cli)
+dj: the Django CLI
+==================
+
+   * [Getting Started](#getting-started)
       * [Installation](#installation)
       * [Commands](#commands)
-         * [dj info](#dj-info)
-         * [dj init](#dj-init)
-         * [dj add](#dj-add)
-         * [dj remove](#dj-remove)
-         * [dj generate](#dj-generate)
-         * [dj run](#dj-run)
-         * [dj lint](#dj-lint)
-         * [dj test](#dj-test)
-   * [Developing apps](#developing-apps)
-      * [Guiding principles](#guiding-principles)
+         * [info](#info)
+         * [init](#init)
+         * [add](#add)
+         * [remove](#remove)
+         * [generate](#generate)
+         * [run](#run)
+         * [lint](#lint)
+         * [test](#test)
+   * [Developer's Guide](#developers-guide)
+      * [Principles](#principles)
          * [Consistency](#consistency)
-            * [An app MUST have a name.](#an-app-must-have-a-name)
-            * [An app MUST have only one top-level code package sharing the app's name.](#an-app-must-have-only-one-top-level-code-package-sharing-the-apps-name)
-            * [An app MUST have a top-level setup.py file.](#an-app-must-have-a-top-level-setuppy-file)
-            * [An app may have a top-level manage.py script.](#an-app-may-have-a-top-level-managepy-script)
-            * [An app may include a top-level requirements.txt dependency file.](#an-app-may-include-a-top-level-requirementstxt-dependency-file)
-            * [An app may have a top-level requirements.txt.dev dependency file.](#an-app-may-have-a-top-level-requirementstxtdev-dependency-file)
-            * [The code package of the app should contain settings.py, wsgi.py, and urls.py packages.](#the-code-package-of-the-app-should-contain-settingspy-wsgipy-and-urlspy-packages)
-            * [An app should be written in a single code style.](#an-app-should-be-written-in-a-single-code-style)
-            * [An app should contain a tests package for all unit and integration tests.](#an-app-should-contain-a-tests-package-for-all-unit-and-integration-tests)
          * [Clarity](#clarity)
-            * [An app should only export one package.](#an-app-should-only-export-one-package)
-            * [App code should be concise.](#app-code-should-be-concise)
-            * [App structure should be concise.](#app-structure-should-be-concise)
       * [Blueprints](#blueprints)
          * [Context](#context)
          * [Templates](#templates)
@@ -38,8 +29,7 @@
       * [virtualenv](#virtualenv)
       * [pyenv](#pyenv)
 
-dj: The Django CLI
-==================
+# Getting Started
 
 `dj` is a command-line tool that automates Django application developer workflows:
 
@@ -64,15 +54,7 @@ To install `dj`, simply run [the appropriate installer](./INSTALLERS.md) for you
 Run `dj --help` to see a list of supported commands.
 Run `dj SUBCOMMAND --help` for help on any specific subcommand.
 
-### dj info
-
-Display information about the current app.
-
-### dj init
-
-Sets up a shell Django project in the current directory. This command will prompt for all optional arguments, unless passed in.
-
-### dj add
+### add
 
 Add a dependency to the project. The dependency must be given in pip depdendency notation.
 
@@ -87,11 +69,7 @@ For example:
     dj add dynamic-rest
     dj add git+https://github.com/AltSchool/dynamic-rest@master#egg=dynamic-rest
 
-### dj remove
-
-Removes an installed addon, the inverse of `dj add`.
-
-### dj generate
+### generate
 
 Generates a set of modules given a blueprint. The blueprint can be prefixed by the name
 of an addon and may take several arguments.
@@ -102,29 +80,41 @@ The following core blueprints are supported:
 2. model: custom data model and associated test
 3. command: custom server command and associated test
 
-### dj run
+### info
+
+Display information about the current app.
+
+### init
+
+Sets up a shell Django project in the current directory. This command will prompt for all optional arguments, unless passed in.
+
+### lint
+
+Lints code files using `flake8` / fixes with `autopep8`.
+
+### remove
+
+Removes an installed addon, the inverse of `dj add`.
+
+### run
 
 Run any Django command in development mode.
 
 The app is built and run in a virtual environment.
 The runtime specified during initialization is used.
 
-### dj lint
-
-Lints code files using `flake8` / fixes with `autopep8`.
-
-### dj test
+### test
 
 Run tests within the project.
 This uses `manage.py test` or provided runner (e.g. `py.test`) to run all test cases in the `tests` package.
 
-# Developing apps
+# Developer's Guide
 
 It is easy to turn an existing Python or Django library into a `dj`-compatible app that be used standalone or
 as an addon to another app. The term "addon" is used to mean that the application code can be used as a library
 and that its blueprints can be generated.
 
-## Guiding principles
+## Principles
 
 Django apps using `dj` should follow these principles.
 Most are recommended, some are required.
