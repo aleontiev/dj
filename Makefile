@@ -14,7 +14,7 @@ shell: install
 	@. $(INSTALL_DIR)/bin/activate; python
 
 test: install
-	@. $(INSTALL_DIR)/bin/activate; py.test tests
+	@. $(INSTALL_DIR)/bin/activate; py.test tests --capture=no
 
 clean:
 	rm -rf dist/ build/

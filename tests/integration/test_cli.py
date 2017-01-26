@@ -38,8 +38,18 @@ class CLITestCase(TestCase):
                 'class_name': 'Foo'
             })
 
+            try:
+                result = execute('test --ds=tests.settings')
+            except Exception as e:
+                e = click.unstyle(str(e))
+                self.assertTrue(
+                    'no such table: %s_%s' % ('dummy', 'foo') in e
+                )
+
             print '* Testing new migration flow'
             execute('run manage.py makemigrations --quiet')
+
+            execute('test --ds=tests.settings')
 
             result = execute('run manage.py migrate --quiet')
             self.assertTrue('Applying dummy.0001_initial' in result)

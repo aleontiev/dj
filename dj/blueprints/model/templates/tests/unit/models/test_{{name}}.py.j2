@@ -1,0 +1,8 @@
+from {{ app }}.models import {{ class_name }}
+from django.test import TestCase
+
+class {{ class_name }}TestCase(TestCase):
+    def test_ok(self):
+        self.assertTrue(
+            {{class_name}}.objects.create().pk is not None
+        )

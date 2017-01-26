@@ -220,11 +220,11 @@ class Application(object):
             )
 
     def execute(self, command, **kwargs):
-        self.stdout.write(style.format_command('Running', command))
         return self.environment.execute(command, **kwargs)
 
     def run(self, command, **kwargs):
         self.build()
+        self.stdout.write(style.format_command('Running', command))
         return self.execute(command, **kwargs)
 
     def generate(self, blueprint, context):

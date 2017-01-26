@@ -14,4 +14,4 @@ def test(args):
     args = [
         'pytest', 'tests', '--ds=tests.settings'
     ] + list(args)
-    run.main(args)
+    run.main(args, standalone_mode=False)
