@@ -7,7 +7,8 @@ from dj.utils.style import white, green, red, yellow, gray
 
 
 class Dependency(object):
-    parse_regex = re.compile(r'^([A-Za-z][-A-Za-z0-9_.]+)([=><]+)([0-9.]+)$')
+    version_regex = re.compile(r'^([A-Za-z][-A-Za-z0-9_.]+)([=><]+)([0-9.]+)$')
+    egg_regex = re.compile(r'^(.*)#egg=(.*)$')
 
     def __init__(self, value):
         value = value.strip('\n')
@@ -16,15 +17,24 @@ class Dependency(object):
 
     @classmethod
     def parse(cls, value):
-        result = cls.parse_regex.match(value)
-        if result:
-            name = result.group(1)
-            operator = result.group(2)
-            version = result.group(3)
+        match = cls.egg_regex.match(value)
+        if match:
+            # https://some/url@v1#egg=foo
+            # -> foo@https://some/url@v1
+            name = match.group(2)
+            operator = '@'
+            version = match.group(1)
         else:
-            name = value
-            operator = ''
-            version = ''
+            # foo>=1.2.0
+            match = cls.version_regex.match(value)
+            if match:
+                name = match.group(1)
+                operator = match.group(2)
+                version = match.group(3)
+            else:
+                name = value
+                operator = ''
+                version = ''
         return name, operator, version
 
     def __eq__(self, other):
@@ -34,7 +44,7 @@ class Dependency(object):
         return unicode(self).encode('utf-8')
 
     def __unicode__(self):
-        return '%s%s%s' % (self.name, self.operator, self.version)
+        return self.value
 
     def to_stdout(self):
         return '%s %s %s' % (

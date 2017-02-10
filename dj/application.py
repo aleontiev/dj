@@ -266,8 +266,12 @@ class Application(object):
         try:
             # try adding
             self.build()
-        except:
+        except Exception as e:
             # restore original settings
+            self.stdout.write(style.red(str(e)))
+            self.stdout.write(
+                style.yellow('Could not find %s' % addon)
+            )
             dependencies.remove(addon)
             if existing:
                 dependencies.add(existing)
