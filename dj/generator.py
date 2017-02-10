@@ -81,17 +81,22 @@ class Generator(object):
                 ):
                     # target exists, is not empty, and does not
                     # match source
-                    default = 'm'
-                    action = click.prompt(
-                        style.prompt(
-                            '%s already exists, '
-                            '[r]eplace, [s]kip, or [m]erge?' % relative_target,
-                        ),
-                        default=style.default(default)
-                    )
-                    action = click.unstyle(action).lower()
-                    if action not in {'r', 'm', 's'}:
-                        action = default
+                    if target.endswith('__init__.py'):
+                        action = 'm'
+                    else:
+                        default = 'm'
+                        action = click.prompt(
+                            style.prompt(
+                                '%s already exists, '
+                                '[r]eplace, [s]kip, or [m]erge?' % (
+                                    relative_target
+                                ),
+                            ),
+                            default=style.default(default)
+                        )
+                        action = click.unstyle(action).lower()
+                        if action not in {'r', 'm', 's'}:
+                            action = default
 
                 if action == 's':
                     self.stdout.write(
