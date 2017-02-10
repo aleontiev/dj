@@ -11,8 +11,7 @@ class Config(object):
         'devRequirements': 'requirements.txt.dev',
         'runtime': '2.7.9',
     }
-    config_directory = '.dj'
-    filename = 'config.yaml'
+    filename = 'dj.yml'
     build_directory = 'build'
 
     def __new__(cls, file):
@@ -30,7 +29,6 @@ class Config(object):
     def get_environment_path(cls, directory):
         return os.path.join(
             directory,
-            cls.config_directory,
             cls.build_directory
         )
 
@@ -40,7 +38,6 @@ class Config(object):
             self.directory = directory
             self.file = os.path.join(
                 directory,
-                Config.config_directory,
                 Config.filename
             )
             self._data = {}
