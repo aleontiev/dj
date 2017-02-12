@@ -6,6 +6,7 @@ class Addon(object):
 
     def __init__(self, name, directory):
         self.name = name
+        self.module_name = name.replace('-', '_')
         self.directory = directory
         self.blueprints_directory = os.path.join(directory, 'blueprints')
 

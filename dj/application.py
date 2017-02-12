@@ -65,11 +65,16 @@ class Application(object):
         return name
 
     def _get_name(self):
-        name = None
+        name = self.config.get('name')
+        if name:
+            return name
+
         setup_file = os.path.join(self.directory, self.setup_file)
         if os.path.exists(setup_file):
             try:
                 name = Application.parse_application_name(setup_file)
+                self.config.set('name', name)
+                self.config.save()
             except Exception as e:
                 import traceback
                 raise Exception(
@@ -115,16 +120,20 @@ class Application(object):
     @property
     def blueprints(self):
         if not hasattr(self, '_blueprints'):
-            self._blueprints = {
-                ('%s.%s' % (b.addon.name, b.name) if b.addon else b.name): b
-                for b in self.get_blueprints()
-            }
+            self._blueprints = {}
+            for b in self.get_blueprints():
+                # add by full name, e.g. dj.model
+                self._blueprints[b.full_name] = b
+                if not b.addon or b.name not in self._blueprints:
+                    # for blueprints other that init or core,
+                    # add them to the global namespace
+                    self._blueprints[b.name] = b
         return self._blueprints
 
     def get_blueprints(self):
         addons = self.addons.values()
         blueprints = [a.blueprints.values() for a in addons]
-        return [x for s in blueprints for x in s] + get_core_blueprints()
+        return get_core_blueprints() + [x for s in blueprints for x in s]
 
     @property
     def requirements_last_modified(self):
@@ -264,8 +273,23 @@ class Application(object):
         self.stdout.write(style.format_command('Adding', addon))
         dependencies.add(addon)
         try:
-            # try adding
+            # try running the build
             self.build()
+
+            # remove version of this in other requirements file
+            other_dependencies.remove(addon, warn=False)
+
+            # look for new addon constructor
+            self._blueprints = self.get_blueprints()
+            constructor = '%s.init' % addon.module_name
+            constructor = self._blueprints.get(constructor)
+
+            # run new addon constructor
+            if constructor:
+                context = constructor.load_context().main(
+                    [], standalone_mode=False
+                )
+                self.generate(constructor, context)
         except Exception as e:
             # restore original settings
             self.stdout.write(style.red(str(e)))
@@ -276,9 +300,6 @@ class Application(object):
             if existing:
                 dependencies.add(existing)
             return
-
-        # remove version of this in other requirements file
-        other_dependencies.remove(addon, warn=False)
 
     def remove(self, addon, dev=False):
         """Remove a dependency and uninstall it."""

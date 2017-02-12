@@ -2,8 +2,6 @@ from __future__ import absolute_import
 import click
 from jinja2.exceptions import UndefinedError
 from dj.application import get_current_application
-from dj.utils import style
-from .base import stdout
 
 
 class GenerateCommand(click.MultiCommand):
@@ -39,7 +37,7 @@ class GenerateCommand(click.MultiCommand):
         except UndefinedError as e:
             raise click.ClickException(
                 '%s.\n'
-                'The blueprint\'s context may be invalid.' % str(e)
+                "The blueprint's context may be invalid." % str(e)
             )
 
 
