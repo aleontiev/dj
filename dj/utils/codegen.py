@@ -39,7 +39,10 @@ def merge(source, delta):
         source_value.update(delta_value)
         return RedBaron(str(source_value))[0].dumps()
 
-    if isinstance(source, ListNode) and isinstance(delta, ListNode):
+    if (
+        isinstance(source, (ListNode, TupleNode)) and
+        isinstance(delta, (ListNode, TupleNode))
+    ):
         # two lists
         source_value = source.to_python()
         delta_value = delta.to_python()
@@ -97,4 +100,3 @@ def merge(source, delta):
         return source.dumps()
 
     raise Exception("Can't merge %s into %s" % (delta, source))
-

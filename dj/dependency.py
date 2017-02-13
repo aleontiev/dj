@@ -14,6 +14,7 @@ class Dependency(object):
         value = value.strip('\n')
         self.value = value
         self.name, self.operator, self.version = Dependency.parse(value)
+        self.module_name = self.name.replace('-', '_')
 
     @classmethod
     def parse(cls, value):

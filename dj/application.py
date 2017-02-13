@@ -117,6 +117,11 @@ class Application(object):
             addons.append(Addon(name, parent_directory))
         return addons
 
+    def refresh_blueprints(self):
+        if hasattr(self, '_blueprints'):
+            del self._blueprints
+        return self.blueprints
+
     @property
     def blueprints(self):
         if not hasattr(self, '_blueprints'):
@@ -275,16 +280,15 @@ class Application(object):
         try:
             # try running the build
             self.build()
+            self.refresh_blueprints()
 
             # remove version of this in other requirements file
             other_dependencies.remove(addon, warn=False)
 
-            # look for new addon constructor
-            self._blueprints = self.get_blueprints()
-            constructor = '%s.init' % addon.module_name
-            constructor = self._blueprints.get(constructor)
-
             # run new addon constructor
+            constructor_name = '%s.init' % Dependency(addon).module_name
+            constructor = self.blueprints.get(constructor_name)
+
             if constructor:
                 context = constructor.load_context().main(
                     [], standalone_mode=False

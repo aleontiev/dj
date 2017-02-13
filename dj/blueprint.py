@@ -48,7 +48,7 @@ class Blueprint(object):
     @property
     def full_name(self):
         return (
-            '%s.%s' % (self.name, self.addon.name)
+            '%s.%s' % (self.addon.name, self.name)
             if self.addon else self.name
         )
 

@@ -10,6 +10,7 @@ class Addon(object):
         self.directory = directory
         self.blueprints_directory = os.path.join(directory, 'blueprints')
 
+    @property
     def blueprints(self):
         if not hasattr(self, '_blueprints'):
             self._blueprints = {
@@ -17,8 +18,11 @@ class Addon(object):
             }
         return self._blueprints
 
-    def get_blueprints(self, directory):
-        return Blueprint.get_blueprints(directory, addon=self)
+    def get_blueprints(self):
+        return Blueprint.get_blueprints(
+            self.blueprints_directory,
+            addon=self
+        )
 
     def __repr__(self):
         return '%s (%s)' % (self.name, self.directory)
