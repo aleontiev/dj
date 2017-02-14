@@ -24,8 +24,12 @@ def load_urls(relative, namespaced=True):
     urlpatterns = []
     for _, name, package in pkgutil.iter_modules(relative):
         if package:
-            module_name = '%s%s.urls' % (relative, name)
-            urls = importlib.import_module(module_name)
+            module_name = '%s%s.urls' % (prefix, name)
+            try:
+                urls = importlib.import_module(module_name)
+            except ImportError:
+                continue
+
             patterns = getattr(urls, 'urlpatterns', None)
             if patterns:
                 if namespaced:

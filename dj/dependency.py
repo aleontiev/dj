@@ -25,6 +25,11 @@ class Dependency(object):
             name = match.group(2)
             operator = '@'
             version = match.group(1)
+        elif os.path.exists(value):
+            # /some/local/directory
+            name = os.path.basename(value)
+            operator = '@'
+            version = value
         else:
             # foo>=1.2.0
             match = cls.version_regex.match(value)

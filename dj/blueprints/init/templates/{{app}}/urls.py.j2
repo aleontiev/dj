@@ -9,4 +9,4 @@ from {{app}}.utils.urls import load_urls
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-] + load_urls(__file__, namespaced=True)
+] + load_urls(__file__, namespaced=False)
