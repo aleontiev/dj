@@ -5,7 +5,7 @@ from dj.utils.style import format_command
 PYENV_ROOT = os.path.expanduser('~/.pyenv')
 
 
-def install_dependencies(update=False):
+def install_pyenv_dependencies(update=False):
     if not exists("brew"):
         stdout.write(format_command('Installing', 'brew'))
         execute(
@@ -26,6 +26,9 @@ def install_dependencies(update=False):
 
 
 def get_runtime_root(version):
+    if version == 'system':
+        return None
+
     return os.path.join(
         PYENV_ROOT,
         'versions/%s' % version
@@ -33,21 +36,40 @@ def get_runtime_root(version):
 
 
 def install_runtime(version):
-    install_dependencies()
-    versions = execute('pyenv versions', capture=True)
+    if version == 'system':
+        # use system python version
+        if 'virtualenv' not in execute('pip list', capture=True):
+            execute(
+                'pip install -U virtualenv'
+            )
 
-    if version not in versions:
-        stdout.write(format_command('Installing', version))
-        execute(
-            'PYTHON_CONFIGURE_OPTS="--enable-shared" '
-            'pyenv install %s' % version, verbose=True
-        )
-        execute(
-            '%s/bin/pip install -U virtualenv' % get_runtime_root(version)
-        )
+    else:
+        # use pyenv to manage versions
+        install_pyenv_dependencies()
+        versions = execute('pyenv versions', capture=True)
+        root = get_runtime_root(version)
+
+        if version not in versions:
+            stdout.write(format_command('Installing', version))
+            execute(
+                'PYTHON_CONFIGURE_OPTS="--enable-shared" '
+                'pyenv install %s' % version, verbose=True
+            )
+
+        if 'virtualenv' not in execute('%s/bin/pip list' % root, capture=True):
+            execute(
+                '%s/bin/pip install -U virtualenv' % root
+            )
+
+
+def get_major_system_version():
+    version = execute('python -V', capture=True).split(' ')[-1]
+    return get_major_version(version)
 
 
 def get_major_version(version):
+    if version == 'system':
+        return get_major_system_version()
     return '.'.join(version.split('.')[0:2])
 
 
@@ -88,7 +110,9 @@ class Runtime(object):
         if not self._is_installed:
             if self._is_virtual:
                 install_virtualenv(
-                    '%s/bin/virtualenv' % self.directory,
+                    (
+                        '%s/bin/virtualenv' % self.directory
+                    ) if self.directory else 'virtualenv',
                     self.virtual_directory
                 )
             else:

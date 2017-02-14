@@ -9,7 +9,7 @@ class Config(object):
     defaults = {
         'requirements': 'requirements.txt',
         'devRequirements': 'requirements.txt.dev',
-        'runtime': '2.7.9',
+        'runtime': 'system'
     }
     filename = 'dj.yml'
     build_directory = 'build'

@@ -3,7 +3,7 @@ import os
 from dj.commands.dj import execute
 from dj.application import set_current_application, Application
 from tempfile import mkdtemp
-import threading
+import multiprocessing
 
 
 class TemporaryApplication(object):
@@ -40,22 +40,23 @@ class TemporaryApplication(object):
             self._application = None
             set_current_application(None)
 
-    def execute(self, command, thread=False):
+    def execute(self, command, async=False):
         def _execute(command):
             cd = os.getcwd()
-            os.chdir(self._directory)
-            result = execute(command)
-            os.chdir(cd)
-            return result
+            try:
+                os.chdir(self._directory)
+                result = execute(command)
+                return result
+            finally:
+                os.chdir(cd)
 
         self._initialize()
-        if thread:
-            thread = threading.Thread(
+        if async:
+            job = multiprocessing.Process(
                 target=_execute,
                 args=(command, ),
             )
-            thread.daemon = True
-            thread.start()
-            return thread
+            job.start()
+            return job
         else:
             return _execute(command)

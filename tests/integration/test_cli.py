@@ -45,6 +45,7 @@ class CLITestCase(TestCase):
         result = application.execute('run manage.py migrate --quiet')
         self.assertFalse('Applying dummy.0001_initial' in result, result)
 
+        print '* Testing command generation'
         application.execute('generate command foobar')
 
         result = application.execute('run manage.py help --quiet')
@@ -56,9 +57,12 @@ class CLITestCase(TestCase):
         result = click.unstyle(application.execute('info'))
         self.assertTrue('Django == 1.10' in result, result)
 
-        application.execute('serve 9123', thread=True)
-        time.sleep(1)
+        print '* Testing server'
+        server = application.execute('serve 9123', async=True)
+        time.sleep(2)
 
         response = requests.get('http://localhost:9123')
         content = response.content
         self.assertTrue('It worked' in content, content)
+
+        server.terminate()

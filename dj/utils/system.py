@@ -2,6 +2,7 @@ import os
 import click
 import sys
 import subprocess
+import signal
 
 
 def get(
@@ -93,7 +94,14 @@ def execute(
         command,
         shell=True,
         stdout=out,
-        stderr=err
+        stderr=err,
+    )
+    # propagate SIGTERM to all child processes within
+    # the process group. this prevents subprocesses from
+    # being orphaned when the current process is terminated
+    signal.signal(
+        signal.SIGTERM,
+        lambda *args: os.killpg(os.getpgid(process.pid), signal.SIGKILL)
     )
 
     # Wait for the process to complete
