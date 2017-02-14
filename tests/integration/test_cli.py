@@ -26,7 +26,7 @@ class CLITestCase(TestCase):
 
             print '* Testing migration flow'
             result = execute('run manage.py migrate --quiet')
-            self.assertTrue('Applying auth.0001_initial' in result)
+            self.assertTrue('Applying auth.0001_initial' in result, result)
 
             result = execute('run manage.py migrate --quiet')
             self.assertTrue('No migrations to apply' in result)
