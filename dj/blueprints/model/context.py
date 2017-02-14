@@ -14,6 +14,7 @@ def get_context(name):
     For example:
 
         dj generate model Foo
+
         dj migrate
     """
     return {

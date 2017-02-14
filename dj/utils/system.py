@@ -54,6 +54,15 @@ def touch(file):
         os.utime(file, None)
 
 
+def make_terminate_handler(process, signal=signal.SIGTERM):
+    def inner(*args):
+        try:
+            os.killpg(os.getpgid(process.pid), signal)
+        except OSError:
+            pass
+    return inner
+
+
 def execute(
     command,
     abort=True,
@@ -101,7 +110,7 @@ def execute(
     # being orphaned when the current process is terminated
     signal.signal(
         signal.SIGTERM,
-        lambda *args: os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        make_terminate_handler(process)
     )
 
     # Wait for the process to complete
