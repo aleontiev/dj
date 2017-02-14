@@ -82,7 +82,14 @@ class Generator(object):
                     # target exists, is not empty, and does not
                     # match source
                     if target.endswith('__init__.py'):
+                        # default merge __init__.py files
+                        # if non-empty, these should only
+                        # contain imports from submoduiles
                         action = 'm'
+                    elif target.endswith('base.py'):
+                        # default skip base.py files
+                        # these should be extended by the developer
+                        action = 's'
                     else:
                         default = 'm'
                         action = click.prompt(

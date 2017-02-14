@@ -1,72 +1,64 @@
 from unittest import TestCase
 import click
-from dj.commands.dj import execute
-from tests.utils import in_temporary_directory
-from dj.application import get_current_application
+from dj.test import TemporaryApplication
+import time
+import requests
 
 
 class CLITestCase(TestCase):
 
     def test_create_new_app(self):
-        with in_temporary_directory():
-            application = get_current_application()
+        print '* Generating application'
+        application = TemporaryApplication()
 
-            print '* Generating application'
-            application.generate('init', {
-                'app': 'dummy',
-                'description': 'x',
-                'author': 'x',
-                'email': 'x',
-                'version': '0.0.1',
-                'django_version': '1.10'
-            })
-            print '* Testing build/run'
-            result = execute('run manage.py help --quiet')
-            self.assertTrue('for help on a specific subcommand' in result)
+        print '* Testing build/run'
+        result = application.execute('run manage.py help --quiet')
+        self.assertTrue('for help on a specific subcommand' in result, result)
 
-            print '* Testing migration flow'
-            result = execute('run manage.py migrate --quiet')
-            self.assertTrue('Applying auth.0001_initial' in result, result)
+        print '* Testing migration flow'
+        result = application.execute('run manage.py migrate --quiet')
+        self.assertTrue('Applying auth.0001_initial' in result, result)
 
-            result = execute('run manage.py migrate --quiet')
-            self.assertTrue('No migrations to apply' in result)
+        result = application.execute('run manage.py migrate --quiet')
+        self.assertTrue('No migrations to apply' in result, result)
 
-            print '* Testing model generation'
-            execute('generate model foo')
-            application.generate('model', {
-                'name': 'foo',
-                'class_name': 'Foo'
-            })
+        print '* Testing model generation'
+        application.execute('generate model foo')
 
-            try:
-                result = execute('test --ds=tests.settings')
-            except Exception as e:
-                e = click.unstyle(str(e))
-                self.assertTrue(
-                    'no such table: %s_%s' % ('dummy', 'foo') in e
-                )
+        try:
+            result = application.execute('test --ds=tests.settings')
+        except Exception as e:
+            e = click.unstyle(str(e))
+            self.assertTrue(
+                'no such table: %s_%s' % ('dummy', 'foo') in e,
+                e
+            )
 
-            print '* Testing new migration flow'
-            execute('run manage.py makemigrations --quiet')
+        print '* Testing new migration flow'
+        application.execute('run manage.py makemigrations --quiet')
 
-            execute('test --ds=tests.settings')
+        application.execute('test --ds=tests.settings')
 
-            result = execute('run manage.py migrate --quiet')
-            self.assertTrue('Applying dummy.0001_initial' in result)
+        result = application.execute('run manage.py migrate --quiet')
+        self.assertTrue('Applying dummy.0001_initial' in result, result)
 
-            result = execute('run manage.py migrate --quiet')
-            self.assertFalse('Applying dummy.0001_initial' in result)
+        result = application.execute('run manage.py migrate --quiet')
+        self.assertFalse('Applying dummy.0001_initial' in result, result)
 
-            application.generate('command', {
-                'name': 'foobar',
-                'help': 'Foo'
-            })
+        application.execute('generate command foobar')
 
-            result = execute('run manage.py help --quiet')
-            self.assertTrue('foobar' in result)
+        result = application.execute('run manage.py help --quiet')
+        self.assertTrue('foobar' in result, result)
 
-            result = execute('run manage.py foobar --quiet')
-            self.assertTrue('foobar called' in result)
+        result = application.execute('run manage.py foobar --quiet')
+        self.assertTrue('foobar called' in result, result)
 
-            result = click.unstyle(execute('info'))
-            self.assertTrue('Django == 1.10' in result)
+        result = click.unstyle(application.execute('info'))
+        self.assertTrue('Django == 1.10' in result, result)
+
+        application.execute('serve 9123', thread=True)
+        time.sleep(1)
+
+        response = requests.get('http://localhost:9123')
+        content = response.content
+        self.assertTrue('It worked' in content, content)

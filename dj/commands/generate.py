@@ -22,13 +22,14 @@ class GenerateCommand(click.MultiCommand):
         args = context.protected_args + context.args
         name = args[0]
         application = self.application
-        blueprint = application.blueprints.get(name)
         if not application:
             raise click.ClickException('Could not locate application')
+
+        blueprint = application.blueprints.get(name)
         if not blueprint:
             raise click.ClickException('Could not locate blueprint')
 
-        command = self.get_command(context, name)
+        command = blueprint.load_context()
         args = args[1:]
         ctx = command.main(args, standalone_mode=False)
 
@@ -37,7 +38,9 @@ class GenerateCommand(click.MultiCommand):
         except UndefinedError as e:
             raise click.ClickException(
                 '%s.\n'
-                "The blueprint's context may be invalid." % str(e)
+                "The blueprint's context may be invalid.\n"
+                'Blueprint: %s\n'
+                'Context: %s' % (str(e), str(blueprint), str(ctx))
             )
 
 

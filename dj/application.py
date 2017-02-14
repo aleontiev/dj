@@ -368,3 +368,8 @@ def get_current_application():
     if not current_application:
         current_application = Application()
     return current_application
+
+
+def set_current_application(application):
+    global current_application
+    current_application = application

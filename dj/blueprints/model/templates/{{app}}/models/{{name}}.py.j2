@@ -1,5 +1,6 @@
 from django.db import models
+from .base import Model
 
-class {{ class_name }}(models.Model):
+class {{ class_name }}(Model):
     class Meta:
         app_label = '{{ app }}'
