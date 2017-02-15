@@ -22,7 +22,7 @@ def load_urls(relative, namespaced=True):
         prefix = prefix + '.'
 
     urlpatterns = []
-    for _, name, package in pkgutil.iter_modules(relative):
+    for _, name, package in pkgutil.iter_modules([relative]):
         if package:
             module_name = '%s%s.urls' % (prefix, name)
             try:
@@ -34,7 +34,7 @@ def load_urls(relative, namespaced=True):
             if patterns:
                 if namespaced:
                     urlpatterns.append(
-                        url('^%s' % name, include(patterns))
+                        url('%s/' % name, include(patterns))
                     )
                 else:
                     urlpatterns.extend(patterns)
