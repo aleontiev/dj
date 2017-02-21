@@ -1,1 +1,5 @@
 recursive-include dj/blueprints/*/templates *
+include *.j2
+include *.txt
+include *.md
+include *.ini
