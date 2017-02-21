@@ -117,9 +117,11 @@ class Application(object):
             addons.append(Addon(name, parent_directory))
         return addons
 
-    def refresh_blueprints(self):
+    def refresh(self):
         if hasattr(self, '_blueprints'):
             del self._blueprints
+        if hasattr(self, '_addons'):
+            del self._addons
         return self.blueprints
 
     @property
@@ -280,7 +282,7 @@ class Application(object):
         try:
             # try running the build
             self.build()
-            self.refresh_blueprints()
+            self.refresh()
 
             # remove version of this in other requirements file
             other_dependencies.remove(addon, warn=False)
