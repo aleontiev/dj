@@ -8,6 +8,7 @@ def strip_extension(string):
 
 
 def render_from_string(string, context):
+    print string
     environment = Environment(undefined=StrictUndefined)
     return environment.from_string(string).render(**context)
 
