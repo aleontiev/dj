@@ -277,7 +277,7 @@ class Application(object):
             )
         )
 
-    def add(self, addon, dev=False):
+    def add(self, addon, dev=False, interactive=True):
         """Add a new dependency and install it."""
         dependencies = self.get_dependency_manager(dev=dev)
         other_dependencies = self.get_dependency_manager(dev=not dev)
@@ -300,7 +300,7 @@ class Application(object):
                 context = constructor.load_context().main(
                     [], standalone_mode=False
                 )
-                self.generate(constructor, context)
+                self.generate(constructor, context, interactive=interactive)
         except Exception as e:
             # restore original settings
             self.stdout.write(style.red(str(e)))
