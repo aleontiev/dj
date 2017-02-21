@@ -1,0 +1,4 @@
+devRequirements: requirements.txt.dev
+name: dj
+requirements: requirements.txt
+runtime: system

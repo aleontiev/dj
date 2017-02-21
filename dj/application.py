@@ -243,7 +243,7 @@ class Application(object):
         self.stdout.write(style.format_command('Running', command))
         return self.execute(command, **kwargs)
 
-    def generate(self, blueprint, context):
+    def generate(self, blueprint, context, interactive=True):
         """Generate a blueprint within this application."""
         if not isinstance(blueprint, Blueprint):
             bp = self.blueprints.get(blueprint)
@@ -257,7 +257,12 @@ class Application(object):
                 blueprint.full_name
             )
         )
-        generator = Generator(self, blueprint, context)
+        generator = Generator(
+            self,
+            blueprint,
+            context,
+            interactive=interactive
+        )
         result = generator.generate()
         if blueprint.name == 'init':
             # try re-setting the name

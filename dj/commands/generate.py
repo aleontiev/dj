@@ -19,7 +19,17 @@ class GenerateCommand(click.MultiCommand):
         return self.application.blueprints[name].load_context()
 
     def invoke(self, context):
-        args = context.protected_args + context.args
+        given_args = context.protected_args + context.args
+        interactive = True
+        args = []
+        for arg in given_args:
+            if arg == '--interactive':
+                interactive = True
+            elif arg == '--not-interactive':
+                interactive = False
+            else:
+                args.append(arg)
+
         name = args[0]
         application = self.application
         if not application:
@@ -34,7 +44,11 @@ class GenerateCommand(click.MultiCommand):
         ctx = command.main(args, standalone_mode=False)
 
         try:
-            return application.generate(blueprint, ctx)
+            return application.generate(
+                blueprint,
+                ctx,
+                interactive=interactive
+            )
         except UndefinedError as e:
             raise click.ClickException(
                 '%s.\n'
@@ -45,6 +59,10 @@ class GenerateCommand(click.MultiCommand):
 
 
 @click.command(cls=GenerateCommand)
+@click.option(
+    '--interactive/--not-interactive',
+    default=True
+)
 def generate(*args, **kwargs):
     """Generate a code stub."""
     pass

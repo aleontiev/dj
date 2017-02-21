@@ -23,7 +23,7 @@ class CLITestCase(TestCase):
         self.assertTrue('No migrations to apply' in result, result)
 
         print '* Testing model generation'
-        application.execute('generate model foo')
+        application.execute('generate model foo --not-interactive')
 
         try:
             result = application.execute('test --ds=tests.settings')

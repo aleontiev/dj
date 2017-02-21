@@ -15,9 +15,17 @@ from dj.utils import style
 
 class Generator(object):
 
-    def __init__(self, application, blueprint, context, stdout=None):
+    def __init__(
+        self,
+        application,
+        blueprint,
+        context,
+        interactive=True,
+        stdout=None
+    ):
         self.stdout = stdout or _stdout
         self.application = application
+        self.interactive = interactive
         self.blueprint = blueprint
         self.context = context
         self.temp_dir = tempfile.mkdtemp()
@@ -100,7 +108,7 @@ class Generator(object):
                                 ),
                             ),
                             default=style.default(default)
-                        )
+                        ) if self.interactive else default
                         action = click.unstyle(action).lower()
                         if action not in {'r', 'm', 's'}:
                             action = default
