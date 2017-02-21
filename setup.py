@@ -3,6 +3,7 @@ from setuptools import (
     setup,
 )
 
+
 def get_dependencies(file):
     import re
 
@@ -69,5 +70,5 @@ setup(
         ]
     },
     url='http://github.com/aleontiev/dj',
-    version='0.0.1'
+    version='0.0.2'
 )
