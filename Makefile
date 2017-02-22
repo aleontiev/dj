@@ -1,4 +1,5 @@
 INSTALL_DIR := ./build
+VERSION := 0.0.3
 
 install: $(INSTALL_DIR)/bin/activate
 
@@ -28,4 +29,4 @@ clean-all: clean
 distribute: clean-all install
 	. $(INSTALL_DIR)/bin/activate; pip install pyinstaller
 	. $(INSTALL_DIR)/bin/activate; pyinstaller dj.exe.spec
-	ln -sf $(CURDIR)/dist/dj.exe/dj.exe /usr/local/bin/dj
+	tar -czvf dj-$(VERSION).tar.gz ./dist/dj.exe
