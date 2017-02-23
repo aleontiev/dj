@@ -225,7 +225,7 @@ class Application(object):
                 'pip install -U -r %s' % self.requirements
             )
             self._build(
-                'dev requirements',
+                'requirements (dev)',
                 self.dev_requirements_last_modified,
                 'pip install -U -r %s' % self.dev_requirements
             )
@@ -342,7 +342,7 @@ class Application(object):
                         key=lambda x: x[0].lower()):
                     output.append(' ' + dep.to_stdout())
             if dev_requirements:
-                output.append(style.blue('Dev requirements:'))
+                output.append(style.blue('Requirements (dev):'))
                 for _, dep in sorted(
                         dev_requirements.items(),
                         key=lambda x: x[0].lower()

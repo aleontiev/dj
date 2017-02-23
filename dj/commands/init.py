@@ -31,5 +31,4 @@ def init(name, runtime):
     config.save()
 
     generate.main(['init', name], standalone_mode=False)
-    stdout.write(style.format_command('Migrating'))
-    run.main(['manage.py', 'migrate'])
+    run.main(['python', 'manage.py', 'migrate'])

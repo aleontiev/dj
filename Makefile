@@ -30,3 +30,7 @@ distribute: clean-all install
 	. $(INSTALL_DIR)/bin/activate; pip install pyinstaller
 	. $(INSTALL_DIR)/bin/activate; pyinstaller dj.exe.spec
 	tar -czvf dj-$(VERSION).tar.gz ./dist/dj.exe
+
+link:
+	rm -rf /usr/local/bin/dj
+	ln -sf $(shell pwd)/dist/dj.exe/dj.exe /usr/local/bin/dj
