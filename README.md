@@ -42,7 +42,7 @@ The Python distribution ecosystem often provides an uncertain and segmented expe
 
 For example, the typical development environment might use `pyenv` to control the Python runtime version, `virtualenv` to isolate the project's dependencies, `pip` and `setuptools` to specify dependencies, `django-admin` to initialize a project, `manage.py` within the virtual environment to run commands, and a `Makefile` or `run.py` to wrap all of these tools, filling in the gaps between them.
 
-`dj`, insipred by ember-cli, attempts to instead provide a simple, comprehensive, and extendable
+`dj`, inspired by ember-cli, attempts to instead provide a simple, comprehensive, and extendable
 interface for the Django development lifecycle.
 
 With `dj`, you can create and start a Django app in seconds, and modify it with your first migration in minutes.
