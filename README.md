@@ -45,7 +45,9 @@ For example, the typical development environment might use `pyenv` to control th
 `dj`, inspired by ember-cli, attempts to instead provide a simple, comprehensive, and extendable
 interface for the Django development lifecycle.
 
-With `dj`, you can create and start a Django app in seconds, and modify it with your first migration in minutes.
+With `dj`, you can create a new Django app, add a model, and create an instance of that model in *under 60 seconds*:
+
+<a href="https://asciinema.org/a/ak0470s3ofigxdzoy6eatxek8" target="_blank"><img src="https://asciinema.org/a/ak0470s3ofigxdzoy6eatxek8.png" /></a>
 
 ## Installation
 
