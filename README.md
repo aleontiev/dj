@@ -51,8 +51,21 @@ With `dj`, you can create a new Django app, add a model, and create an instance 
 
 ## Installation
 
-To install `dj`, simply run [the appropriate installer](./INSTALLERS.md) for your operating system.
-`dj` distributes with PyInstaller and runs within an isolated Python environment.
+To install the current version of `dj` with Homebrew, run:
+
+```
+    brew install aleontiev/homebrew-core/dj
+```
+
+If you like `dj`, please star this repository to help get it into Homebrew core :)
+
+If you have Linux, Windows, or don't want to use Homebrew, you can also install `dj` by cloning this repository and running:
+
+```
+    make distribute && make link
+```
+
+Regardless of installation method, `dj` distributes with PyInstaller and runs within an isolated Python environment on your system.
 
 ## Commands
 
