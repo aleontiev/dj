@@ -138,6 +138,19 @@ def execute(
         return process
 
 
+def find_nearest(directory, filename):
+    full_path = os.path.join(directory, filename)
+    exists = os.path.exists(full_path)
+    if exists:
+        return full_path
+    if directory == '/':
+        return None
+    return find_nearest(
+        os.path.abspath(os.path.join(directory, os.pardir)),
+        filename
+    )
+
+
 def exists(program):
     try:
         execute("command -v %s" % program, verbose=False)
