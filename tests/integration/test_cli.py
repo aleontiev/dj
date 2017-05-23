@@ -12,11 +12,11 @@ class CLITestCase(TestCase):
         application = TemporaryApplication()
 
         print '* Testing build/run'
-        result = application.execute('run manage.py help --quiet')
+        result = application.execute('run python manage.py help --quiet')
         self.assertTrue('for help on a specific subcommand' in result, result)
 
         print '* Testing migration flow'
-        result = application.execute('run manage.py migrate --quiet')
+        result = application.execute('run python manage.py migrate --quiet')
         self.assertTrue('Applying auth.0001_initial' in result, result)
 
         result = application.execute('run manage.py migrate --quiet')
