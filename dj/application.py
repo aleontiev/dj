@@ -10,12 +10,13 @@ from .blueprint import get_core_blueprints
 from .utils.system import (
     get_directories,
     get_last_touched,
+    find_nearest,
     touch,
+    stdout as _stdout
 )
 from .utils import style
 from .config import Config
 from .runtime import Runtime
-from .utils.system import stdout as _stdout
 from redbaron import RedBaron
 
 
@@ -27,17 +28,36 @@ class Application(object):
         directory=None
     ):
         self.stdout = stdout or _stdout
-        self.directory = directory or os.getcwd()
+        current = os.getcwd()
+        nearest_setup_file = find_nearest(current, 'setup.py')
+        self.directory = directory or (
+            os.path.dirname(
+                nearest_setup_file
+            ) if nearest_setup_file else current
+        )
         self.config = Config(self.directory)
-
-        self.setup_file = 'setup.py'
-        self.requirements = self.config.get('requirements')
-        self.dev_requirements = self.config.get('devRequirements')
-        runtime = self.config.get('runtime')
-        self.runtime = Runtime(runtime)
+        self.setup_file = os.path.join(
+            self.directory,
+            'setup.py'
+        )
+        self.requirements_file = os.path.join(
+            self.directory,
+            self.config.get('requirements')
+        )
+        self.dev_requirements_file = os.path.join(
+            self.directory,
+            self.config.get('devRequirements'),
+        )
+        self.runtime = Runtime(self.config.get('runtime'))
 
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.directory)
+
+    @property
+    def exists(self):
+        if not hasattr(self, '_exists'):
+            self._exists = os.path.exists(self.setup_file)
+        return self._exists
 
     @staticmethod
     def parse_application_name(setup_filename):
@@ -69,18 +89,13 @@ class Application(object):
         if name:
             return name
 
-        setup_file = os.path.join(self.directory, self.setup_file)
-        if os.path.exists(setup_file):
+        if self.exists:
             try:
-                name = Application.parse_application_name(setup_file)
-                self.config.set('name', name)
-                self.config.save()
-            except Exception as e:
-                import traceback
-                raise Exception(
-                    'Failed to parse app setup file: %s\n%s' %
-                    (str(e), traceback.format_exc())
-                )
+                name = Application.parse_application_name(self.setup_file)
+            except Exception:
+                name = 'unknown'
+            self.config.set('name', name)
+            self.config.save()
         return name
 
     @property
@@ -88,13 +103,6 @@ class Application(object):
         if not hasattr(self, '_name'):
             self._name = self._get_name()
         return self._name
-
-    @property
-    def application_directory(self):
-        return os.path.join(
-            self.directory,
-            self.name
-        )
 
     @property
     def addons(self):
@@ -118,11 +126,14 @@ class Application(object):
         return addons
 
     def refresh(self):
+        if hasattr(self, '_name'):
+            del self._name
         if hasattr(self, '_blueprints'):
             del self._blueprints
         if hasattr(self, '_addons'):
             del self._addons
-        return self.blueprints
+        if hasattr(self, '_exists'):
+            del self._exists
 
     @property
     def blueprints(self):
@@ -144,15 +155,11 @@ class Application(object):
 
     @property
     def requirements_last_modified(self):
-        return get_last_touched(
-            os.path.join(self.directory, self.requirements)
-        )
+        return get_last_touched(self.requirements_file)
 
     @property
     def dev_requirements_last_modified(self):
-        return get_last_touched(
-            os.path.join(self.directory, self.dev_requirements)
-        )
+        return get_last_touched(self.dev_requirements_file)
 
     @property
     def setup_last_modified(self):
@@ -218,17 +225,17 @@ class Application(object):
             ValidationError if the app fails to build.
         """
 
-        if self.name:
+        if self.exists:
             self._build(
                 'requirements',
                 self.requirements_last_modified,
-                'pip install -U -r %s' % self.requirements
+                'pip install -U -r %s' % self.requirements_file
             )
             try:
                 self._build(
                     'requirements (dev)',
                     self.dev_requirements_last_modified,
-                    'pip install -U -r %s' % self.dev_requirements
+                    'pip install -U -r %s' % self.dev_requirements_file
                 )
             except Exception as e:
                 if 'No such file' not in str(e):
@@ -236,11 +243,10 @@ class Application(object):
                 self.stdout.write(
                     style.yellow('Could not find dev requirements')
                 )
-
             self._build(
                 'application',
                 self.setup_last_modified,
-                'python setup.py develop'
+                'python %s develop' % self.setup_file
             )
 
     def execute(self, command, **kwargs):
@@ -274,14 +280,14 @@ class Application(object):
         result = generator.generate()
         if blueprint.name == 'init':
             # try re-setting the name
-            self._name = self._get_name()
+            self.refresh()
         return result
 
     def get_dependency_manager(self, dev=False):
         return DependencyManager(
             os.path.join(
                 self.directory,
-                self.dev_requirements if dev else self.requirements
+                self.dev_requirements_file if dev else self.requirements_file
             )
         )
 
@@ -339,9 +345,8 @@ class Application(object):
         output = []
         dev_requirements = self.get_dependency_manager(dev=True).dependencies
         requirements = self.get_dependency_manager(dev=False).dependencies
-        name = self.name
         app = self.to_stdout()
-        if name:
+        if self.exists:
             output.append(style.blue('Application:\n %s' % app))
             if requirements:
                 output.append(style.blue('Requirements:'))
