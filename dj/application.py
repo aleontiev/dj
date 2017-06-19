@@ -224,11 +224,19 @@ class Application(object):
                 self.requirements_last_modified,
                 'pip install -U -r %s' % self.requirements
             )
-            self._build(
-                'requirements (dev)',
-                self.dev_requirements_last_modified,
-                'pip install -U -r %s' % self.dev_requirements
-            )
+            try:
+                self._build(
+                    'requirements (dev)',
+                    self.dev_requirements_last_modified,
+                    'pip install -U -r %s' % self.dev_requirements
+                )
+            except Exception as e:
+                if 'No such file' not in str(e):
+                    raise e
+                self.stdout.write(
+                    style.yellow('Could not find dev requirements')
+                )
+
             self._build(
                 'application',
                 self.setup_last_modified,
