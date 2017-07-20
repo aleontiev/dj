@@ -27,8 +27,11 @@ def load_urls(relative, namespaced=True):
             module_name = '%s%s.urls' % (prefix, name)
             try:
                 urls = importlib.import_module(module_name)
-            except ImportError:
-                continue
+            except ImportError as e:
+                if str(e).startswith('No module named urls'):
+                    continue
+                else:
+                    raise
 
             patterns = getattr(urls, 'urlpatterns', None)
             if patterns:
