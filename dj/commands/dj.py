@@ -2,32 +2,34 @@ from __future__ import absolute_import
 import click
 
 from .base import MultiCommand
-from .shell import shell
-from .run import run
-from .init import init
-from .generate import generate
 from .add import add
-from .remove import remove
-from .migrate import migrate
-from .server import server
-from .test import test
-from .info import info
+from .generate import generate
 from .help import help
+from .info import info
+from .init import init
+from .lint import lint
+from .migrate import migrate
+from .remove import remove
+from .run import run
+from .server import server
+from .shell import shell
+from .test import test
 
 
 class _MultiCommand(MultiCommand):
     commands = {
+        'add': add,
+        'generate': generate,
+        'help': help,
+        'info': info,
+        'init': init,
+        'lint': lint,
         'migrate': migrate,
+        'remove': remove,
+        'run': run,
         'server': server,
         'shell': shell,
         'test': test,
-        'run': run,
-        'init': init,
-        'generate': generate,
-        'add': add,
-        'remove': remove,
-        'info': info,
-        'help': help
     }
 
 

@@ -11,7 +11,17 @@ from .run import run
 )
 def test(args):
     """Run tests."""
-    args = [
-        'pytest', 'tests', '--ds=tests.settings'
-    ] + list(args)
+    arguments = []
+    options = []
+    for arg in args:
+        if arg.startswith('--'):
+            options.append(arg)
+        else:
+            arguments.append(arg)
+
+    if not arguments:
+        # by default, run all tests
+        arguments = ['tests']
+
+    args = ['pytest'] + arguments + options
     run.main(args, standalone_mode=False)

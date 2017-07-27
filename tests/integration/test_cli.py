@@ -15,6 +15,9 @@ class CLITestCase(TestCase):
         result = application.execute('run python manage.py help --quiet')
         self.assertTrue('for help on a specific subcommand' in result, result)
 
+        print '* Testing linting'
+        application.execute('lint')
+
         print '* Testing migration flow'
         result = application.execute('run python manage.py migrate --quiet')
         self.assertTrue('Applying auth.0001_initial' in result, result)
@@ -26,7 +29,7 @@ class CLITestCase(TestCase):
         application.execute('generate model foo --not-interactive')
 
         try:
-            result = application.execute('test --ds=tests.settings')
+            result = application.execute('test tests.unit')
         except Exception as e:
             e = click.unstyle(str(e))
             self.assertTrue(
@@ -37,7 +40,7 @@ class CLITestCase(TestCase):
         print '* Testing new migration flow'
         application.execute('run manage.py makemigrations --quiet')
 
-        application.execute('test --ds=tests.settings')
+        application.execute('test')
 
         result = application.execute('run manage.py migrate --quiet')
         self.assertTrue('Applying dummy.0001_initial' in result, result)
