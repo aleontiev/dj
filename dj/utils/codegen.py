@@ -1,7 +1,12 @@
 from __future__ import absolute_import
 
+import pprint
 from redbaron import RedBaron
 from redbaron.nodes import *  # noqa
+
+
+def str_format(value):
+    return pprint.pformat(value, indent=4)
 
 
 def merge_lists(source, delta):
@@ -37,7 +42,7 @@ def merge(source, delta):
         source_value = source.to_python()
         delta_value = delta.to_python()
         source_value.update(delta_value)
-        return RedBaron(str(source_value))[0].dumps()
+        return RedBaron(str_format(source_value))[0].dumps()
 
     if (
         isinstance(source, (ListNode, TupleNode)) and
@@ -47,11 +52,11 @@ def merge(source, delta):
         source_value = source.to_python()
         delta_value = delta.to_python()
         value = merge_lists(source_value, delta_value)
-        return RedBaron(str(value))[0].dumps()
+        return RedBaron(str_format(value))[0].dumps()
 
-    if isinstance(
-            source, LiteralyEvaluable) and isinstance(
-            delta, LiteralyEvaluable):
+    if isinstance(source, LiteralyEvaluable) and isinstance(
+        delta, LiteralyEvaluable
+    ):
         # all other literals -> take new value
         return delta
 
@@ -65,9 +70,9 @@ def merge(source, delta):
         source.targets = ','.join(targets)
         return source
 
-    if isinstance(
-            source, AssignmentNode) and isinstance(
-            delta, AssignmentNode):
+    if isinstance(source, AssignmentNode) and isinstance(
+            delta, AssignmentNode
+    ):
         source.value = merge(source.value, delta.value)
         return source
 
