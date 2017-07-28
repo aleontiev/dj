@@ -1,7 +1,7 @@
 # -*- mode: python -*-
 import os
 
-ROOT = '/Users/ant/code/django-cli'
+ROOT = '/Users/ant/code/dj'
 BLUEPRINTS = 'dj/blueprints'
 HIDDEN_IMPORTS = ['setuptools', 'setuptools.msvc', 'inflection']
 

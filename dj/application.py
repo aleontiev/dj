@@ -365,7 +365,7 @@ class Application(object):
             output.append(
                 style.yellow(
                     '%s, try running %s.' % (
-                        app, style.white('django init')
+                        app, style.white('dj init')
                     )
                 )
             )

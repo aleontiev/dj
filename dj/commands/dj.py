@@ -14,6 +14,7 @@ from .run import run
 from .server import server
 from .shell import shell
 from .test import test
+from .version import version
 
 
 class _MultiCommand(MultiCommand):
@@ -30,6 +31,7 @@ class _MultiCommand(MultiCommand):
         'server': server,
         'shell': shell,
         'test': test,
+        'version': version
     }
 
 

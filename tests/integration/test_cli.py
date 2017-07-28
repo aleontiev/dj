@@ -72,3 +72,6 @@ class CLITestCase(TestCase):
         self.assertTrue('It worked' in content, content)
 
         server.terminate()
+
+        self.log('Testing version')
+        application.execute('version')

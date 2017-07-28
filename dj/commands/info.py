@@ -10,10 +10,10 @@ def info():
 
     Examples:
 
-    $ django info
-    No application, try running django init.
+    $ dj info
+    No application, try running dj init.
 
-    $ django info
+    $ dj info
     Application:
       foo @ 2.7.9
     Requirements:

@@ -169,4 +169,4 @@ class StyleStdout(object):
         copy.update(kwargs)
         click.echo(click.style(message, **copy))
 
-stdout = StyleStdout(fg='blue')
+stdout = StyleStdout(fg='white', bold=True)
