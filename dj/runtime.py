@@ -75,7 +75,7 @@ def get_major_version(version):
 
 def install_virtualenv(virtualenv, directory):
     if not os.path.exists(os.path.join(directory, 'bin/activate')):
-        stdout.write(format_command('Creating virtual environment'))
+        # stdout.write(format_command('Creating virtual environment'))
         if not os.path.exists(directory):
             os.makedirs(directory)
 

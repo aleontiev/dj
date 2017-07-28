@@ -15,5 +15,5 @@ def lint(args):
     application = get_current_application()
     if not args:
         args = [application.name, 'tests']
-    args = ['flake8'] + list(args)
+    args = ['flake8'] + list(args) + ['--count']
     run.main(args, standalone_mode=False)
