@@ -11,6 +11,7 @@ For example, `{{app}}.api.urls:urlpatterns` will be exposed under the
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf import settings
 from djx.urls import load_urls
 
 urlpatterns = load_urls(__file__)
