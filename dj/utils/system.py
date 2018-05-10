@@ -5,6 +5,16 @@ import subprocess
 import signal
 
 
+def get_platform_os():
+    if not exists('uname'):
+        return 'Windows'
+
+    return execute(
+        'uname -s',
+        capture=True
+    )
+
+
 def get(
     directory,
     filter=None,

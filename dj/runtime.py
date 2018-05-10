@@ -1,28 +1,46 @@
 import os
-from dj.utils.system import execute, exists, stdout
+
+from dj.utils.system import execute, exists, stdout, get_platform_os
 from dj.utils.style import format_command
 
 PYENV_ROOT = os.path.expanduser('~/.pyenv')
 
 
 def install_pyenv_dependencies(update=False):
-    if not exists("brew"):
-        stdout.write(format_command('Installing', 'brew'))
-        execute(
-            'ruby -e "$(curl -fsSL '
-            'https://raw.githubusercontent.com'
-            '/Homebrew/install/master/install',
-            verbose=True)
-    elif update:
-        stdout.write(format_command('Updating', 'brew'))
-        execute('brew update', verbose=True)
+    platform = get_platform_os()
+    if platform == 'Darwin':
+        if not exists("brew"):
+            stdout.write(format_command('Installing', 'brew'))
+            execute(
+                'ruby -e "$(curl -fsSL '
+                'https://raw.githubusercontent.com'
+                '/Homebrew/install/master/install',
+                verbose=True)
+        elif update:
+            stdout.write(format_command('Updating', 'brew'))
+            execute('brew update', verbose=True)
 
-    if not exists('pyenv'):
-        stdout.write(format_command('Installing', 'pyenv'))
-        execute('brew install pyenv', verbose=True)
-    elif update:
-        stdout.write(format_command('Updating', 'pyenv'))
-        execute('brew install --upgrade pyenv', verbose=True)
+        if not exists('pyenv'):
+            stdout.write(format_command('Installing', 'pyenv'))
+            execute('brew install pyenv', verbose=True)
+        elif update:
+            stdout.write(format_command('Updating', 'pyenv'))
+            execute('brew install --upgrade pyenv', verbose=True)
+    elif platform == 'Linux':
+        if not exists('curl'):
+            stdout.write(format_command('Installing', 'curl'))
+            execute('sudo apt-get install curl')
+        if not exists('pyenv'):
+            stdout.write(format_command('Installing', 'pyenv'))
+            execute(
+                'curl -L '
+                'https://github.com/pyenv/pyenv-installer/'
+                'raw/master/bin/pyenv-installer'
+                '| bash'
+            )
+        elif update:
+            stdout.write(format_command('Updating', 'pyenv'))
+            execute('pyenv update', verbose=True)
 
 
 def get_runtime_root(version):
