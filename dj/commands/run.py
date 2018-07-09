@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import click
+import os
 from click.exceptions import ClickException
 from dj.application import get_current_application
 from dj.utils import style
@@ -28,12 +29,13 @@ def run(quiet, args):
     cmd = ' '.join(args)
     application = get_current_application()
     name = application.name
+    settings = os.environ.get('DJANGO_SETTINGS_MODULE', '%s.settings' % name)
     return application.run(
         cmd,
         verbose=not quiet,
         abort=False,
         capture=True,
         env={
-            'DJANGO_SETTINGS_MODULE': '%s.settings' % name
+            'DJANGO_SETTINGS_MODULE': settings
         }
     )
