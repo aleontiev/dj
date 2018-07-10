@@ -48,6 +48,10 @@ class Application(object):
             self.directory,
             self.config.get('devRequirements'),
         )
+        self.local_requirements_file = os.path.join(
+            self.directory,
+            self.config.get('localRequirements'),
+        )
         self.runtime = Runtime(self.config.get('runtime'))
 
     def __unicode__(self):
@@ -162,6 +166,10 @@ class Application(object):
         return get_last_touched(self.dev_requirements_file)
 
     @property
+    def local_requirements_last_modified(self):
+        return get_last_touched(self.local_requirements_file)
+
+    @property
     def setup_last_modified(self):
         # timestamp of last setup.py change
         return get_last_touched(self.setup_file)
@@ -242,6 +250,18 @@ class Application(object):
                     raise e
                 self.stdout.write(
                     style.yellow('Could not find dev requirements')
+                )
+            try:
+                self._build(
+                    'requirements (local)',
+                    self.local_requirements_last_modified,
+                    'pip install -U -r %s' % self.local_requirements_file
+                )
+            except Exception as e:
+                if 'No such file' not in str(e):
+                    raise e
+                self.stdout.write(
+                    style.yellow('Could not find local requirements')
                 )
             self._build(
                 'application',

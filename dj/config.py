@@ -9,6 +9,7 @@ class Config(object):
     defaults = {
         'requirements': 'requirements.txt',
         'devRequirements': 'requirements.txt.dev',
+        'localRequirements': 'requirements.txt.local',
         'runtime': 'system'
     }
     filename = 'dj.yml'
