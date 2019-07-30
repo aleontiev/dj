@@ -57,7 +57,7 @@ setup(
     author_email='alonetiev@gmail.com',
     description='dj, the Django CLI',
     include_package_data=True,
-    long_description=open('README.md').read(),
+    long_description=open('README.txt').read(),
     license=open('LICENSE.md').read(),
     name='djay',
     packages=find_packages(),
