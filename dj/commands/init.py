@@ -9,11 +9,11 @@ from .run import run
 
 
 @click.command()
-@click.argument('name')
+@click.argument("name")
 @click.option(
-    '--runtime',
-    prompt=style.prompt('Python version'),
-    default=style.default(Config.defaults['runtime'])
+    "--runtime",
+    prompt=style.prompt("Python version"),
+    default=style.default(Config.defaults["runtime"]),
 )
 def init(name, runtime):
     """Create a new Django app."""
@@ -21,14 +21,13 @@ def init(name, runtime):
 
     stdout.write(
         style.format_command(
-            'Initializing',
-            '%s %s %s' % (name, style.gray('@'), style.green(runtime))
+            "Initializing", "%s %s %s" % (name, style.gray("@"), style.green(runtime))
         )
     )
 
     config = Config(os.getcwd())
-    config.set('runtime', runtime)
+    config.set("runtime", runtime)
     config.save()
 
-    generate.main(['init', name], standalone_mode=False)
-    run.main(['python', 'manage.py', 'migrate'])
+    generate.main(["init", name], standalone_mode=False)
+    run.main(["python", "manage.py", "migrate"])

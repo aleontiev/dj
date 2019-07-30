@@ -14,7 +14,7 @@ def patch_help_formatting():
     HelpFormatter.write_dl = _write_dl
 
 
-def _write_usage(self, prog, args, prefix='Usage: '):
+def _write_usage(self, prog, args, prefix="Usage: "):
     prog = style.white(prog)
     args = style.green(args)
     prefix = style.blue(prefix)
@@ -26,6 +26,4 @@ def _write_heading(self, heading):
 
 
 def _write_dl(self, rows, **kwargs):
-    return self._write_dl([
-        (style.green(r[0]), r[1]) for r in rows
-    ], **kwargs)
+    return self._write_dl([(style.green(r[0]), r[1]) for r in rows], **kwargs)

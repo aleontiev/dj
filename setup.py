@@ -57,8 +57,8 @@ setup(
     author_email='alonetiev@gmail.com',
     description='dj, the Django CLI',
     include_package_data=True,
-    long_description=open('README.txt').read(),
-    license=open('LICENSE.md').read(),
+    long_description=open('README.txt').read().strip(),
+    license=open('LICENSE.md').read().strip(),
     name='djay',
     packages=find_packages(),
     scripts=[],
@@ -70,5 +70,5 @@ setup(
         ]
     },
     url='http://github.com/aleontiev/dj',
-    version='0.0.6'
+    version=open('VERSION.txt').read().strip()
 )

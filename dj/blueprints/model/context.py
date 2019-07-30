@@ -3,7 +3,7 @@ import inflection
 
 
 @click.command()
-@click.argument('name')
+@click.argument("name")
 def get_context(name):
     """Generate a model with given name.
 
@@ -18,6 +18,6 @@ def get_context(name):
         dj migrate
     """
     return {
-        'name': inflection.underscore(name),
-        'class_name': inflection.camelize(name)
+        "name": inflection.underscore(name),
+        "class_name": inflection.camelize(name),
     }

@@ -5,10 +5,9 @@ from dj.application import get_current_application
 
 
 class GenerateCommand(click.MultiCommand):
-
     @property
     def application(self):
-        if not hasattr(self, '_application'):
+        if not hasattr(self, "_application"):
             self._application = get_current_application()
         return self._application
 
@@ -23,9 +22,9 @@ class GenerateCommand(click.MultiCommand):
         interactive = True
         args = []
         for arg in given_args:
-            if arg == '--interactive':
+            if arg == "--interactive":
                 interactive = True
-            elif arg == '--not-interactive':
+            elif arg == "--not-interactive":
                 interactive = False
             else:
                 args.append(arg)
@@ -33,36 +32,29 @@ class GenerateCommand(click.MultiCommand):
         name = args[0]
         application = self.application
         if not application:
-            raise click.ClickException('Could not locate application')
+            raise click.ClickException("Could not locate application")
 
         blueprint = application.blueprints.get(name)
         if not blueprint:
-            raise click.ClickException('Could not locate blueprint')
+            raise click.ClickException("Could not locate blueprint")
 
         command = blueprint.load_context()
         args = args[1:]
         ctx = command.main(args, standalone_mode=False)
 
         try:
-            return application.generate(
-                blueprint,
-                ctx,
-                interactive=interactive
-            )
+            return application.generate(blueprint, ctx, interactive=interactive)
         except UndefinedError as e:
             raise click.ClickException(
-                '%s.\n'
+                "%s.\n"
                 "The blueprint's context may be invalid.\n"
-                'Blueprint: %s\n'
-                'Context: %s' % (str(e), str(blueprint), str(ctx))
+                "Blueprint: %s\n"
+                "Context: %s" % (str(e), str(blueprint), str(ctx))
             )
 
 
 @click.command(cls=GenerateCommand)
-@click.option(
-    '--interactive/--not-interactive',
-    default=True
-)
+@click.option("--interactive/--not-interactive", default=True)
 def generate(*args, **kwargs):
     """Generate a code stub."""
     pass

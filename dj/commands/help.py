@@ -6,4 +6,5 @@ import click
 def help():
     """Display usage info."""
     from .dj import dj
-    dj.main(['--help'])
+
+    dj.main(["--help"])

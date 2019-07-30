@@ -5,15 +5,16 @@ import yaml
 class Config(object):
 
     """A singleton for reading and writing configuration."""
+
     instances = {}
     defaults = {
-        'requirements': 'requirements.txt',
-        'devRequirements': 'requirements.txt.dev',
-        'localRequirements': 'requirements.txt.local',
-        'runtime': 'system'
+        "requirements": "requirements.txt",
+        "devRequirements": "requirements.txt.dev",
+        "localRequirements": "requirements.txt.local",
+        "runtime": "system",
     }
-    filename = 'dj.yml'
-    build_directory = 'build'
+    filename = "dj.yml"
+    build_directory = "build"
 
     def __new__(cls, file):
         if not Config.instances.get(file):
@@ -28,19 +29,12 @@ class Config(object):
 
     @classmethod
     def get_environment_path(cls, directory):
-        return os.path.join(
-            directory,
-            cls.build_directory
-        )
+        return os.path.join(directory, cls.build_directory)
 
     class __Config(object):
-
         def __init__(self, directory):
             self.directory = directory
-            self.file = os.path.join(
-                directory,
-                Config.filename
-            )
+            self.file = os.path.join(directory, Config.filename)
             self._data = {}
             self._load()
 
@@ -50,7 +44,7 @@ class Config(object):
         def clear(self, key):
             self._data.pop(key, None)
 
-        def clear_all(self, prefix=''):
+        def clear_all(self, prefix=""):
             for key in self._data.keys():
                 if key.startswith(prefix):
                     self._data.pop(key)
@@ -73,18 +67,15 @@ class Config(object):
         def _load(self):
             """Load config file into memory."""
             try:
-                with open(self.file, 'r') as file:
+                with open(self.file, "r") as file:
                     self._data = yaml.load(file)
             except IOError:
                 # no config file
                 pass
             except yaml.YAMLError as err:
                 raise Exception(
-                    'Could not parse corrupt config file: %s\n'
-                    'Try running "rm %s"' % (
-                        str(err),
-                        self.file,
-                    )
+                    "Could not parse corrupt config file: %s\n"
+                    'Try running "rm %s"' % (str(err), self.file)
                 )
             # set defaults
             for key, value in Config.defaults.items():
@@ -98,11 +89,11 @@ class Config(object):
                 os.makedirs(path)
 
         def _dump(self):
-            with open(self.file, 'w') as file:
+            with open(self.file, "w") as file:
                 yaml.dump(
                     self._data,
                     file,
-                    encoding='utf-8',
+                    encoding="utf-8",
                     allow_unicode=True,
-                    default_flow_style=False
+                    default_flow_style=False,
                 )

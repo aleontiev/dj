@@ -9,5 +9,5 @@ def migrate():
 
     This runs "makemigrations" and "migrate".
     """
-    run.main(['python', 'manage.py', 'makemigrations'], standalone_mode=False)
-    run.main(['python', 'manage.py', 'migrate'], standalone_mode=False)
+    run.main(["python", "manage.py", "makemigrations"], standalone_mode=False)
+    run.main(["python", "manage.py", "migrate"], standalone_mode=False)

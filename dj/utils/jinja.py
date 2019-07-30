@@ -2,7 +2,7 @@ from jinja2 import Environment, StrictUndefined
 
 
 def strip_extension(string):
-    if string.endswith('.j2'):
+    if string.endswith(".j2"):
         string = string[:-3]
     return string
 
@@ -13,6 +13,6 @@ def render_from_string(string, context):
 
 
 def render_from_file(file, context):
-    with open(file, 'r') as f:
+    with open(file, "r") as f:
         string = f.read()
     return render_from_string(string, context)

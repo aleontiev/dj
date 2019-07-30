@@ -64,7 +64,7 @@ class CLITestCase(TestCase):
 
         self.log('Testing serve')
         server = application.execute(
-            'run manage.py runserver 9123 --quiet', async=True
+            'run manage.py runserver 9123 --quiet', run_async=True
         )
         time.sleep(5)
 

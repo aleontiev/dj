@@ -6,4 +6,4 @@ from .run import run
 @click.command()
 def shell():
     """Start the Django shell."""
-    run.main(['python', 'manage.py', 'shell'])
+    run.main(["python", "manage.py", "shell"])

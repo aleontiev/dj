@@ -9,12 +9,12 @@ import multiprocessing
 class TemporaryApplication(object):
 
     DEFAULT_INIT_PARAMS = {
-        'app': 'dummy',
-        'description': 'dummy',
-        'author': 'dummy',
-        'email': 'dummy@foo.com',
-        'version': '0.0.1',
-        'django_version': '1.10'
+        "app": "dummy",
+        "description": "dummy",
+        "author": "dummy",
+        "email": "dummy@foo.com",
+        "version": "0.0.1",
+        "django_version": "1.10",
     }
 
     def __init__(self, params=None):
@@ -30,7 +30,7 @@ class TemporaryApplication(object):
             self._application = Application(directory=self._directory)
             set_current_application(self._application)
             # generate initial blueprint
-            self._application.generate('init', self._params)
+            self._application.generate("init", self._params)
 
     def __del__(self):
         if self._initialized and self._directory:
@@ -40,7 +40,7 @@ class TemporaryApplication(object):
             self._application = None
             set_current_application(None)
 
-    def execute(self, command, async=False):
+    def execute(self, command, run_async=False):
         def _execute(command):
             cd = os.getcwd()
             try:
@@ -51,11 +51,8 @@ class TemporaryApplication(object):
                 os.chdir(cd)
 
         self._initialize()
-        if async:
-            job = multiprocessing.Process(
-                target=_execute,
-                args=(command, ),
-            )
+        if run_async:
+            job = multiprocessing.Process(target=_execute, args=(command,))
             job.start()
             return job
         else:

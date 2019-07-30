@@ -1,5 +1,6 @@
 click
 six
+flake8
 pyyaml
 jinja2
 inflection

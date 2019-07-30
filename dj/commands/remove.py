@@ -3,8 +3,8 @@ import click
 from dj.application import get_current_application
 
 
-@click.argument('addon')
-@click.option('--dev', is_flag=True)
+@click.argument("addon")
+@click.option("--dev", is_flag=True)
 @click.command()
 def remove(addon, dev):
     """Remove a dependency.

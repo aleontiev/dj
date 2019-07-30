@@ -1,5 +1,5 @@
 INSTALL_DIR := ./build
-VERSION := 0.0.6
+VERSION := $(shell cat VERSION.txt)
 
 install: $(INSTALL_DIR)/bin/activate
 
@@ -34,3 +34,6 @@ distribute: clean-all install
 link:
 	rm -rf /usr/local/bin/dj
 	ln -sf $(shell pwd)/dist/dj.exe/dj.exe /usr/local/bin/dj
+
+tox: install
+	@. $(INSTALL_DIR)/bin/activate; tox $(CMD)

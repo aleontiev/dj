@@ -19,19 +19,19 @@ from .version import version
 
 class _MultiCommand(MultiCommand):
     commands = {
-        'add': add,
-        'generate': generate,
-        'help': help,
-        'info': info,
-        'init': init,
-        'lint': lint,
-        'migrate': migrate,
-        'remove': remove,
-        'run': run,
-        'server': server,
-        'shell': shell,
-        'test': test,
-        'version': version
+        "add": add,
+        "generate": generate,
+        "help": help,
+        "info": info,
+        "init": init,
+        "lint": lint,
+        "migrate": migrate,
+        "remove": remove,
+        "run": run,
+        "server": server,
+        "shell": shell,
+        "test": test,
+        "version": version,
     }
 
 
@@ -42,5 +42,5 @@ def dj(*args, **kwargs):
 
 
 def execute(command):
-    command = command.split(' ')
+    command = command.split(" ")
     return dj.main(command, standalone_mode=False)

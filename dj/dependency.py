@@ -7,14 +7,14 @@ from dj.utils.style import white, green, red, yellow, gray
 
 
 class Dependency(object):
-    version_regex = re.compile(r'^([A-Za-z][-A-Za-z0-9_.]+)([=><]+)([0-9.]+)$')
-    egg_regex = re.compile(r'^(.*)#egg=(.*)$')
+    version_regex = re.compile(r"^([A-Za-z][-A-Za-z0-9_.]+)([=><]+)([0-9.]+)$")
+    egg_regex = re.compile(r"^(.*)#egg=(.*)$")
 
     def __init__(self, value):
-        value = value.strip('\n')
+        value = value.strip("\n")
         self.value = value
         self.name, self.operator, self.version = Dependency.parse(value)
-        self.module_name = self.name.replace('-', '_')
+        self.module_name = self.name.replace("-", "_")
 
     @classmethod
     def parse(cls, value):
@@ -23,12 +23,12 @@ class Dependency(object):
             # https://some/url@v1#egg=foo
             # -> foo@https://some/url@v1
             name = match.group(2)
-            operator = '@'
+            operator = "@"
             version = match.group(1)
         elif os.path.exists(value):
             # /some/local/directory
             name = os.path.basename(value)
-            operator = '@'
+            operator = "@"
             version = value
         else:
             # foo>=1.2.0
@@ -39,8 +39,8 @@ class Dependency(object):
                 version = match.group(3)
             else:
                 name = value
-                operator = ''
-                version = ''
+                operator = ""
+                version = ""
         return name, operator, version
 
     def __eq__(self, other):
@@ -53,15 +53,14 @@ class Dependency(object):
         return self.value
 
     def to_stdout(self):
-        return '%s %s %s' % (
-            white(self.name),
-            gray(self.operator),
-            green(self.version)
-        ) if self.operator else white(self.name)
+        return (
+            "%s %s %s" % (white(self.name), gray(self.operator), green(self.version))
+            if self.operator
+            else white(self.name)
+        )
 
 
 class DependencyManager(object):
-
     def __init__(self, source):
         self.source = source
 
@@ -71,18 +70,16 @@ class DependencyManager(object):
         old = self.dependencies.get(new.name)
         self.dependencies[new.name] = new
         if old is None or str(old) != str(new):
-            old_label = old.to_stdout() if old else ''
+            old_label = old.to_stdout() if old else ""
 
             self._save()
             if old_label:
-                stdout.write(red('- ') + old_label)
-            stdout.write(green('+ ') + new_label)
+                stdout.write(red("- ") + old_label)
+            stdout.write(green("+ ") + new_label)
             return True
         else:
             if warn:
-                stdout.write(
-                    '%s %s' %
-                    (new_label, yellow('already installed.')))
+                stdout.write("%s %s" % (new_label, yellow("already installed.")))
             return False
 
     def remove(self, value, warn=True):
@@ -93,11 +90,11 @@ class DependencyManager(object):
             old_label = old.to_stdout()
             self.dependencies.pop(new.name)
             self._save()
-            stdout.write(red('- ') + old_label)
+            stdout.write(red("- ") + old_label)
             return True
         else:
             if warn:
-                stdout.write('%s %s' % (new_label, yellow('not installed.')))
+                stdout.write("%s %s" % (new_label, yellow("not installed.")))
             return False
 
     def get(self, key):
@@ -105,7 +102,7 @@ class DependencyManager(object):
 
     @property
     def dependencies(self):
-        if not hasattr(self, '_dependencies'):
+        if not hasattr(self, "_dependencies"):
             if os.path.exists(self.source):
                 self._dependencies = self._load()
             else:
@@ -114,7 +111,7 @@ class DependencyManager(object):
 
     def _load(self):
         dependencies = OrderedDict()
-        with open(self.source, 'r') as f:
+        with open(self.source, "r") as f:
             for line in f.readlines():
                 if line:
                     d = Dependency(line)
@@ -123,10 +120,10 @@ class DependencyManager(object):
         return dependencies
 
     def _save(self):
-        with open(self.source, 'w') as f:
+        with open(self.source, "w") as f:
             for dependency in self.dependencies.values():
                 dependency = str(dependency)
-                if not dependency.endswith('\n'):
-                    dependency = dependency + '\n'
+                if not dependency.endswith("\n"):
+                    dependency = dependency + "\n"
                 f.write(dependency)
         self._clean = copy(self.dependencies)
