@@ -48,6 +48,7 @@ def get_dependencies(file):
 
     return install_requires, dependency_links
 
+
 dependencies = get_dependencies('requirements.txt')
 install_requires = dependencies[0].values()
 dependency_links = dependencies[1].values()
@@ -55,9 +56,8 @@ dependency_links = dependencies[1].values()
 setup(
     author='Anthony Leontiev',
     author_email='alonetiev@gmail.com',
-    description='dj, the Django CLI',
+    description='dj: the Django CLI',
     include_package_data=True,
-    long_description=open('README.txt').read().strip(),
     license=open('LICENSE.md').read().strip(),
     name='djay',
     packages=find_packages(),

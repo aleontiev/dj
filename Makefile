@@ -3,13 +3,16 @@ VERSION := $(shell cat VERSION.txt)
 
 install: $(INSTALL_DIR)/bin/activate
 
-pypi_upload: install
-	@. $(INSTALL_DIR)/bin/activate; python setup.py sdist bdist_wheel;
+pypi_upload: pypi_check
 	@. $(INSTALL_DIR)/bin/activate; twine upload dist/*
+
+pypi_check: install
+	@. $(INSTALL_DIR)/bin/activate; python setup.py sdist bdist_wheel --universal;
+	@. $(INSTALL_DIR)/bin/activate; twine check dist/*
 
 $(INSTALL_DIR)/bin/activate: requirements.txt requirements.txt.dev setup.py
 	@test -d $(INSTALL_DIR) || virtualenv $(INSTALL_DIR)
-	@. $(INSTALL_DIR)/bin/activate; pip install -U pip setuptools
+	@. $(INSTALL_DIR)/bin/activate; pip install -U pip setuptools wheel
 	@. $(INSTALL_DIR)/bin/activate; pip install -U -r requirements.txt
 	@. $(INSTALL_DIR)/bin/activate; pip install -U -r requirements.txt.dev
 	@. $(INSTALL_DIR)/bin/activate; python setup.py develop

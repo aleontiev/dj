@@ -13,10 +13,10 @@ PACKAGE_NAME = 'dj'
 TESTS = 'tests'
 PYTEST_ARGS = {
     'default': [
-        TESTS, '--tb=short', '-s', '-rw'
+        TESTS, '-s', '--tb=short', '-rw'
     ],
     'fast': [
-        TESTS, '--tb=short', '-q', '-s', '-rw'
+        TESTS, '-s', '--tb=short', '-q', '-rw'
     ],
 }
 
