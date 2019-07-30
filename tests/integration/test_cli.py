@@ -1,3 +1,4 @@
+from __future__ import print_function
 from unittest import TestCase
 import click
 from dj.utils.style import yellow, white
@@ -9,7 +10,7 @@ import requests
 class CLITestCase(TestCase):
 
     def log(self, msg):
-        print white('\n*** ') + yellow(msg)
+        print(white('\n*** ') + yellow(msg))
 
     def test_create_new_app(self):
         application = TemporaryApplication()
@@ -65,11 +66,11 @@ class CLITestCase(TestCase):
         server = application.execute(
             'run manage.py runserver 9123 --quiet', async=True
         )
-        time.sleep(2)
+        time.sleep(5)
 
         response = requests.get('http://localhost:9123')
         content = response.content
-        self.assertTrue('It worked' in content, content)
+        self.assertTrue('It worked' in content.decode('utf-8'), content)
 
         server.terminate()
 

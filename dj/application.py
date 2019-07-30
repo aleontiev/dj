@@ -54,6 +54,9 @@ class Application(object):
         )
         self.runtime = Runtime(self.config.get('runtime'))
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return '%s (%s)' % (self.name, self.directory)
 

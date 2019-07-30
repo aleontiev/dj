@@ -1,5 +1,6 @@
 import os
 import click
+import six
 import sys
 import subprocess
 import signal
@@ -22,7 +23,7 @@ def get(
     include_files=False,
     include_dirs=False
 ):
-    if isinstance(filter, basestring):
+    if isinstance(filter, six.string_types):
         flt = lambda x: x == filter
     if not callable(filter):
         # if filter is None/unsupported type, allow all
@@ -126,7 +127,7 @@ def execute(
     # Wait for the process to complete
     stdout, _ = process.communicate()
     stdout = stdout.strip() if stdout else ''
-    if not isinstance(stdout, unicode):
+    if hasattr(stdout, 'decode'):
         stdout = stdout.decode('utf-8')
 
     if abort and process.returncode != 0:
