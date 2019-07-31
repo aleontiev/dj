@@ -1,4 +1,0 @@
-recursive-include dj/blueprints/*/templates *
-include *.txt
-include *.md
-include *.ini
