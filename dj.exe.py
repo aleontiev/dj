@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from dj.commands.dj import dj
+from djay.commands.dj import dj
 
 if __name__ == '__main__':
     try:

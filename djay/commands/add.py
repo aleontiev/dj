@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 import click
-from dj.application import get_current_application
+from djay.application import get_current_application
 
 
 @click.argument("addon")

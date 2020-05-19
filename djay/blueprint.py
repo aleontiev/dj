@@ -1,7 +1,7 @@
 import os
 import sys
-from dj.utils.system import get_directories, get_files
-from dj.utils.imports import load_module
+from djay.utils.system import get_directories, get_files
+from djay.utils.imports import load_module
 
 
 class Blueprint(object):

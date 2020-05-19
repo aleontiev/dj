@@ -1,7 +1,7 @@
 import os
 
-from dj.utils.system import execute, exists, stdout, get_platform_os
-from dj.utils.style import format_command
+from djay.utils.system import execute, exists, stdout, get_platform_os
+from djay.utils.style import format_command
 
 PYENV_ROOT = os.path.expanduser("~/.pyenv")
 

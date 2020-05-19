@@ -1,7 +1,7 @@
 import shutil
 import os
-from dj.commands.dj import execute
-from dj.application import set_current_application, Application
+from djay.commands.dj import execute
+from djay.application import set_current_application, Application
 from tempfile import mkdtemp
 import multiprocessing
 

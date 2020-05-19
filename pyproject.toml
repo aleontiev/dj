@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "djay"
+version = "0.0.9"
+description = "The advanced Django CLI"
+authors = ["aleontiev <alonetiev@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+click = "*"
+six = "*"
+flake8 = "*"
+pyyaml = "*"
+jinja2 = "*"
+inflection = "*"
+redbaron = "*"
+
+[tool.poetry.dev-dependencies]
+flake8 = "*"
+pytest = "2.7.2"
+pytest-sugar = "0.5.1"
+requests = "*"
+tox-pyenv = "1.0.2"
+tox = "2.3.1"
+twine = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

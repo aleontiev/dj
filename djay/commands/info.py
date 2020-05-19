@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import click
-from dj.application import get_current_application
-from dj.utils.system import stdout
+from djay.application import get_current_application
+from djay.utils.system import stdout
 
 
 @click.command()

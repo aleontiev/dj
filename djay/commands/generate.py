@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import click
 from jinja2.exceptions import UndefinedError
-from dj.application import get_current_application
+from djay.application import get_current_application
 
 
 class GenerateCommand(click.MultiCommand):

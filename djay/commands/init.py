@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 import os
 import click
-from dj.config import Config
-from dj.utils import style
+from djay.config import Config
+from djay.utils import style
 from .generate import generate
 from .base import stdout
 from .run import run

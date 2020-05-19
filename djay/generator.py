@@ -3,10 +3,10 @@ import tempfile
 import shutil
 import os
 import click
-from dj.utils.codegen import merge
-from dj.utils.jinja import strip_extension, render_from_string, render_from_file
-from dj.utils.system import stdout as _stdout
-from dj.utils import style
+from djay.utils.codegen import merge
+from djay.utils.jinja import strip_extension, render_from_string, render_from_file
+from djay.utils.system import stdout as _stdout
+from djay.utils import style
 
 
 class Generator(object):

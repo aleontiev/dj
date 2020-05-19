@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import click
 import pkg_resources
-from dj.utils.system import stdout
+from djay.utils.system import stdout
 
 
 @click.command()

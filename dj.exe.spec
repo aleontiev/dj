@@ -2,7 +2,7 @@
 import os
 
 ROOT = '/Users/ant/code/dj'
-BLUEPRINTS = 'dj/blueprints'
+BLUEPRINTS = 'djay/blueprints'
 HIDDEN_IMPORTS = ['setuptools', 'setuptools.msvc', 'inflection']
 
 block_cipher = None

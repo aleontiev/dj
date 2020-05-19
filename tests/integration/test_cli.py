@@ -1,8 +1,8 @@
 from __future__ import print_function
 from unittest import TestCase
 import click
-from dj.utils.style import yellow, white
-from dj.test import TemporaryApplication
+from djay.utils.style import yellow, white
+from djay.test import TemporaryApplication
 import time
 import requests
 

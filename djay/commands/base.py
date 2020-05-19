@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from dj.utils.system import StyleStdout
+from djay.utils.system import StyleStdout
 import click
 from .patch import patch_help_formatting
 

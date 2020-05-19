@@ -2,7 +2,7 @@ from __future__ import absolute_import
 import click
 import os
 from click.exceptions import ClickException
-from dj.application import get_current_application
+from djay.application import get_current_application
 
 
 @click.option("--quiet", is_flag=True, default=False)
